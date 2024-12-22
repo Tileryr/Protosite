@@ -6,28 +6,46 @@ import {
   applyNodeChanges,
   applyEdgeChanges,
   addEdge,
+  Panel,
 } from '@xyflow/react';
+
 import '@xyflow/react/dist/style.css';
- 
+import './App.css'
+
 import BaseElementNode from './nodes/ElementBase';
+import HtmlNode from './nodes/HtmlNode';
+import DivNode from './nodes/DivNode';
 
 const initialNodes = [
   {
     id: '1',
-    data: { label: 'Hello' },
+    data: { label: 'Hello', children: [] },
     position: { x: 0, y: 0 },
-    type: 'elementBase',
+    type: 'HtmlNode',
   },
   {
     id: '2',
-    data: { label: 'World' },
+    data: { label: 'World', children: [], type: 'div' },
     position: { x: 100, y: 100 },
+    type: 'DivNode',
+  },
+  {
+    id: '3',
+    data: { label: 'World', children: [], type: 'img' },
+    position: { x: 200, y: 100 },
+    type: 'DivNode',
   },
 ];
- 
-const initialEdges = [];
 
-const nodeTypes = { elementBase: BaseElementNode};
+const initialEdges = [
+  
+];
+
+const nodeTypes = {
+  HtmlNode,
+  BaseElementNode,
+  DivNode,
+};
 
 function Flow() {
   const [nodes, setNodes] = useState(initialNodes);
@@ -60,6 +78,9 @@ function Flow() {
       >
         <Background />
         <Controls />
+        <Panel position='top-right'>
+          <button>BUTTON</button>
+        </Panel>
       </ReactFlow>
     </div>
   );
