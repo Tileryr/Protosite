@@ -1,11 +1,13 @@
-import Input from '../components/InputPort';
-import Output from '../components/OutputPort';
+import { Input, Output } from '../components/Ports'
 
 import ElementBase from '../components/BaseElementNode';
+import { Node, NodeProps } from '@xyflow/react';
 
-export default function DivNode({ id, data }) {
+type DivNode = Node<{ children: Node[], element: string }, 'div'>
+
+export default function DivNode({ id, data }: NodeProps<DivNode>) {
     return (
-    <ElementBase name="Div" id={id} data={data}>
+    <ElementBase name="Div">
         <Output
             id='node'
             label='Element'
