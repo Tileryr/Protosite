@@ -7,14 +7,10 @@ type ParagraphNode = Node<{ text: string, element: string }, 'paragraph'>
 
 export default function ParagraphNode({ id, }: NodeProps<ParagraphNode>) {
     return (
-    <ElementBase name="Paragraph">
-        <Output
-            id='element'
-            label='Element'
-        />
+    <ElementBase name="Paragraph" output={true} type='element'>
         <Input
             id='string'
-            label='String'
+            label='Text'
             limit={true}
             property='text'
         />

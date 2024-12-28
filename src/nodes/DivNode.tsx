@@ -7,12 +7,7 @@ type DivNode = Node<{ children: Node[], element: string }, 'div'>
 
 export default function DivNode({ id, data }: NodeProps<DivNode>) {
     return (
-    <ElementBase name="Div">
-        <Output
-            id='element'
-            label='Element'
-        />
-
+    <ElementBase name="Div" output={true} type='element'>
         <Input
             id='element'
             label='Children'

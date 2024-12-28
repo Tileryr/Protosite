@@ -20,11 +20,7 @@ export default function TextNode({ id, data }: NodeProps<TextNode>) {
     }, [])
 
     return (
-        <ElementBase name="Text" height={300}>
-            <Output 
-                id='string'
-                label='Text'
-            />
+        <ElementBase name="Text" height={300} output={true} type='string'>
             <textarea className='w-full h-full nodrag' onChange={onChange} >
 
             </textarea>

@@ -10,7 +10,7 @@ export type HTMLNode = Node<HTMLElementNodeData>
 
 export default function HtmlNode({ id, data }: NodeProps<HTMLNode>) {
     return (
-        <ElementBase name="HTML">
+        <ElementBase name="HTML" output={false}>
             <Input
                 id='element'
                 label='Children'
