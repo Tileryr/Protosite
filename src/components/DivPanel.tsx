@@ -11,9 +11,12 @@ function DivPanel() {
     function newNode() {
         addNodes([{
             id: randomID(),
-            data: { children: [], element: 'div' },
+            data: { element: {
+                tag: 'div',
+                children: []
+            }},
             position: { x: 300, y: 300 },
-            type: 'DivNode',
+            type: 'div',
         }])
     }
     

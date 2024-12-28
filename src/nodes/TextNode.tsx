@@ -1,17 +1,34 @@
-import { Node, NodeProps } from '@xyflow/react'
+import { ChangeEvent, useCallback, useState } from 'react'
+import { Node, NodeProps, useReactFlow } from '@xyflow/react'
 
 import ElementBase from '../components/BaseElementNode.js'
 import { Output } from '../components/Ports'
 
-type TextNode = Node<{ text: string }, 'text'>
+type TextNodeData = {
+    string: string
+}
+
+type TextNode = Node<TextNodeData, 'text'>
 
 export default function TextNode({ id, data }: NodeProps<TextNode>) {
-    return (
-    <ElementBase name="Text" height={300}>
-        <textarea className='w-full h-full'>
+    const { updateNodeData } = useReactFlow();
 
-        </textarea>
-    </ElementBase>
+    const onChange = useCallback((event: ChangeEvent<HTMLTextAreaElement>) => {
+        updateNodeData(id, { string: event.target.value })
+        console.log(event.target.value)
+        console.log(data)
+    }, [])
+
+    return (
+        <ElementBase name="Text" height={300}>
+            <Output 
+                id='string'
+                label='Text'
+            />
+            <textarea className='w-full h-full nodrag' onChange={onChange} >
+
+            </textarea>
+        </ElementBase>
     )
 }
 

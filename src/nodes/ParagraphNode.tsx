@@ -9,13 +9,14 @@ export default function ParagraphNode({ id, }: NodeProps<ParagraphNode>) {
     return (
     <ElementBase name="Paragraph">
         <Output
-            id='node'
+            id='element'
             label='Element'
         />
         <Input
             id='string'
             label='String'
-            limit={false}
+            limit={true}
+            property='text'
         />
     </ElementBase>
     )

@@ -1,18 +1,18 @@
 import { Node, useNodesData } from "@xyflow/react"
+import { ElementObject, HTMLElementNodeData } from "./components/types"
 
-type NodeData = Pick<Node, "data" | "id" | "type">
-
-export function convertHtml(root: NodeData ) {
+export function convertHtml(root: ElementObject ) {
     const body = document.createElement('div')
     addChildren(root, body)
     return body.outerHTML
 }
 
-const addChildren = (parentNode: NodeData, parentElement: HTMLElement) => {
+const addChildren = (parentNode: ElementObject, parentElement: HTMLElement) => {
     //DO LATER: ADD PROPER TYPE FOR HTMLELEMENTNODES
-    const children = parentNode.data.children as NodeData[]
-    children.forEach((child: any) => {
-        const childElement = document.createElement(child!.data.element as string)
+    const children = parentNode.children
+    children.forEach((child) => {
+        const childElement = document.createElement(child.tag)
+        child.text ? childElement.textContent = child.text : null
         parentElement.append(childElement)
         addChildren(child, childElement)
     });

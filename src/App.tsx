@@ -30,26 +30,38 @@ import ParagraphNode from './nodes/ParagraphNode';
 const initialNodes: Node[] = [
   {
     id: '1',
-    data: { children: [], element: 'body' },
+    data: { element: {
+      tag: 'body',
+      children: []
+    }},
     position: { x: 0, y: 0 },
     type: 'html',
   },
   {
     id: '2',
-    data: { children: [], element: 'div' },
+    data: { element: {
+      tag: 'div',
+      children: []
+    }},
     position: { x: 100, y: 100 },
     type: 'div',
   },
   {
     id: '3',
-    data: { text: '', element: 'p' },
-    position: { x: 200, y: 100 },
+    data: { element: {
+      tag: 'p',
+      children: []
+    }},
+    position: { x: 100, y: 100 },
     type: 'paragraph',
   },
   {
     id: '4',
-    data: { children: [], element: '' },
-    position: { x: 200, y: 100 },
+    data: { 
+      output: 'string',
+      string: ''
+    },
+    position: { x: 100, y: 100 },
     type: 'text',
   },
 ];
@@ -92,15 +104,7 @@ function Flow() {
     (params) => setEdges((eds) => addEdge(params, eds)),
     [],
   );
-  
-  // const onBeforeDelete: OnBeforeDelete = async
-  //   ({ nodes, edges }: {nodes: Node[], edges: Edge[]}) => {
-  //     //FIX EDGES DELETNG ON HTML DELETE
-  //     const filteredNodes: Node[] = nodes.filter(node => node.id !== "1" ? true : false)
-  //     return true
-  //     // return { nodes: filteredNodes, edges } 
-  //   }
-  
+
   const onBeforeDelete: OnBeforeDelete = async ({ nodes, edges }) => {
     const filteredNodes: Node[] = nodes.filter(node => node.id !== "1" ? true : false)
     return { nodes: filteredNodes, edges } 
@@ -108,7 +112,7 @@ function Flow() {
   
   const isValidConnection: IsValidConnection = ({sourceHandle, targetHandle, source, target}) => {
     return sourceHandle === targetHandle && target !== source
-  }
+}
 
   return (
     <div className='flex'>

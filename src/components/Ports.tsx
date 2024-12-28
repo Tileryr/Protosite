@@ -1,32 +1,37 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, Children } from "react";
 import {
     Handle, 
     Position,
     useHandleConnections, 
     useNodesData,
     useNodeId,
-    useReactFlow
+    useReactFlow,
+    IsValidConnection
 } from "@xyflow/react";
 
+import { HTMLNode } from "../nodes/HtmlNode";
+import { DataType, ElementObject } from "./types";
 
-export function Port({ type, position, id, label, limit }: {
+export function Port({ type, position, id, label, limit, isConnectable }: {
     type: 'source' | 'target'
     position: Position
     id: string
     label: string
     limit?: boolean
+    isConnectable: () => boolean
 }) {
-    const ref = useRef<HTMLDivElement>(null)
-
+    const ref = useRef<HTMLDivElement>(null);
+    const nodeId = useNodeId()!;
+    const nodeData = useNodesData(nodeId);
     return (
         <div ref={ref} className={position === Position.Left ? 'justify-self-start' : 'justify-self-end' }>
-            <label>{label}</label>
+            <label onClick={() => console.log(nodeData)}>{label}</label>
             <Handle 
                 id={id}
                 type={type}
                 position={position}
                 style={{ top: ref.current ? ref.current.offsetTop + 12 : 12 }}
-                isConnectable={!limit}
+                isConnectable={isConnectable()}
             />
         </div>
     )
@@ -34,7 +39,7 @@ export function Port({ type, position, id, label, limit }: {
 
 
 export function Output(props: {
-    id: string
+    id: DataType // data property that is outputted
     label: string
 }) {
     return (
@@ -42,35 +47,52 @@ export function Output(props: {
             {...props}
             type='source' 
             position={Position.Left}
+            isConnectable={() => true}
         />
     )
     
 }
 
 export function Input(props: {
-    id: string
+    id: DataType
     label: string
     limit?: boolean
+    property: keyof ElementObject
 }) {
+    //Read what it is outputting
+
     const { updateNodeData } = useReactFlow(); 
-    const nodeId = useNodeId();
+    const nodeId = useNodeId()!;
+    const nodeData = useNodesData<HTMLNode>(nodeId)!
     const connections = useHandleConnections({
         type: 'target',
         id: props.id
     })
+
     const connectedIds = connections.map(connection => connection.source)
-    const connectedNodeData = useNodesData(connectedIds)
+    const connectedNodes = useNodesData(connectedIds)
+    const connectedOutputs = connectedNodes.map(connectedNode => connectedNode.data[props.id])
+
+    const isConnectable = () => {
+        return props.limit ? connections.length < 1 : true
+    }
     
     useEffect(() => {
-        updateNodeData(nodeId!, { children: connectedNodeData})
-    }, [nodeId, connectedNodeData, updateNodeData]) 
+        const oldElement: ElementObject = nodeData.data.element
+        const addedProperty = props.limit ? connectedOutputs[0] : connectedOutputs
+        updateNodeData(nodeId, { element: {...oldElement, [props.property]: addedProperty } })
+    }, [JSON.stringify(connectedOutputs)]) 
 
     return (
         <Port
             {...props}
             type='target' 
             position={Position.Right}
+            isConnectable={isConnectable}
         />
     )
     
 }
+
+// data { outputs: { string: "asdasdads" | element: { tag: 'div', children: [{ tag: 'p' }]}}}
+// data of element: { element: {tag: "skibidi", text: "asdasdasd", classes: "asd asd asd asd"}, output: [element, string]}

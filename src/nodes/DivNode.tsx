@@ -9,14 +9,15 @@ export default function DivNode({ id, data }: NodeProps<DivNode>) {
     return (
     <ElementBase name="Div">
         <Output
-            id='node'
+            id='element'
             label='Element'
         />
 
         <Input
-            id='node'
+            id='element'
             label='Children'
             limit={false}
+            property='children'
         />
     </ElementBase>
     )
