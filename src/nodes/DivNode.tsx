@@ -1,13 +1,20 @@
 import { Input, Output } from '../components/Ports'
 
-import ElementBase from '../components/BaseElementNode';
+import ElementBase, { ElementTag } from '../components/BaseElementNode';
 import { Node, NodeProps } from '@xyflow/react';
+import { ElementNodeData } from '../components/types';
 
-type DivNode = Node<{ children: Node[], element: string }, 'div'>
+type SectioningElementData = ElementNodeData & { children: Node[] }
+type DivNode = Node<SectioningElementData, 'div'>
 
 export default function DivNode({ id, data }: NodeProps<DivNode>) {
+    const tags: ElementTag[] = [
+        {name: 'Div', value: 'div'},
+        {name: 'Section', value: 'section'}
+    ]
+    
     return (
-    <ElementBase name="Div" output={true} type='element'>
+    <ElementBase name="Div" output={true} type='element' tags={tags} id={id} data={data}>
         <Input
             id='element'
             label='Children'

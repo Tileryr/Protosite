@@ -1,13 +1,19 @@
 import { Input, Output } from '../components/Ports'
 
-import ElementBase from '../components/BaseElementNode'
+import ElementBase, { ElementTag } from '../components/BaseElementNode'
 import { Node, NodeProps } from '@xyflow/react'
+import { ElementNodeData } from '../components/types'
 
-type ParagraphNode = Node<{ text: string, element: string }, 'paragraph'>
+type TextElementData = ElementNodeData & { text: string }
+type ParagraphNode = Node<TextElementData, 'paragraph'>
 
-export default function ParagraphNode({ id, }: NodeProps<ParagraphNode>) {
+export default function ParagraphNode({ id, data }: NodeProps<ParagraphNode>) {
+    const tags: ElementTag[] = [
+        { name: "Paragraph", value: "p" }
+    ]
+
     return (
-    <ElementBase name="Paragraph" output={true} type='element'>
+    <ElementBase name="Paragraph" output={true} type='element' tags={tags} id={id} data={data}>
         <Input
             id='string'
             label='Text'

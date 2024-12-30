@@ -8,7 +8,7 @@ export interface ElementObject {
     text?: string
 }
 
-export type HTMLElementNodeData = {
+export type ElementNodeData = {
     element: ElementObject
 }
 

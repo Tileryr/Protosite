@@ -1,4 +1,4 @@
-import { useRef, useEffect, Children } from "react";
+import React, { useRef, useEffect, Children } from "react";
 import {
     Handle, 
     Position,
@@ -11,21 +11,24 @@ import {
 
 import { HTMLNode } from "../nodes/HtmlNode";
 import { DataType, ElementObject } from "./types";
+import { Field } from "./SelectField";
 
-export function Port({ type, position, id, label, limit, isConnectable }: {
+export function Port({ type, position, id, label, isConnectable, children }: {
     type: 'source' | 'target'
     position: Position
     id: string
     label: string
-    limit?: boolean
     isConnectable: () => boolean
+    children?: React.ReactElement
 }) {
     const ref = useRef<HTMLDivElement>(null);
     const nodeId = useNodeId()!;
     const nodeData = useNodesData(nodeId);
+
     return (
         <div ref={ref} className={position === Position.Left ? 'justify-self-start' : 'justify-self-end' }>
             <label onClick={() => console.log(nodeData)}>{label}</label>
+            {children}
             <Handle 
                 id={id}
                 type={type}
@@ -38,17 +41,21 @@ export function Port({ type, position, id, label, limit, isConnectable }: {
 }
 
 
-export function Output(props: {
+export function Output({ id, label, children }: {
     id: DataType // data property that is outputted
     label: string
+    children?: React.ReactElement
 }) {
     return (
         <Port
-            {...props}
+            id={id}
+            label={label}
             type='source' 
             position={Position.Left}
             isConnectable={() => true}
-        />
+        >   
+            {children}
+        </Port>
     )
     
 }
@@ -63,6 +70,7 @@ export function Input(props: {
 
     const { updateNodeData } = useReactFlow(); 
     const nodeId = useNodeId()!;
+    useNodesData
     const nodeData = useNodesData<HTMLNode>(nodeId)!
     const connections = useHandleConnections({
         type: 'target',
@@ -89,7 +97,8 @@ export function Input(props: {
             type='target' 
             position={Position.Right}
             isConnectable={isConnectable}
-        />
+        >
+        </Port>
     )
     
 }
