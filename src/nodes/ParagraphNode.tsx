@@ -9,7 +9,9 @@ type ParagraphNode = Node<TextElementData, 'paragraph'>
 
 export default function ParagraphNode({ id, data }: NodeProps<ParagraphNode>) {
     const tags: ElementTag[] = [
-        { name: "Paragraph", value: "p" }
+        { name: "Paragraph", value: "p" },
+        { name: "Span", value: "span" },
+        { name: "Ordered List", value: "ol" }
     ]
 
     return (

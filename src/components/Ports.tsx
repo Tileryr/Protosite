@@ -43,13 +43,13 @@ export function Port({ type, position, id, label, isConnectable, children }: {
 
 export function Output({ id, label, children }: {
     id: DataType // data property that is outputted
-    label: string
+    label?: string
     children?: React.ReactElement
 }) {
     return (
         <Port
             id={id}
-            label={label}
+            label={label ? label : ''}
             type='source' 
             position={Position.Left}
             isConnectable={() => true}

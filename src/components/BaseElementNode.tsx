@@ -47,7 +47,7 @@ export default function BaseElementNode({ name, height, output, type, tags, id, 
     if (output) {
         if(tags.length > 1) {
             header = (
-                <Output id={type} label={name}> 
+                <Output id={type}> 
                     <SelectField<keyof HTMLElementTagNameMap> 
                     options={tags} 
                     onChange={tagChange} 
@@ -57,9 +57,7 @@ export default function BaseElementNode({ name, height, output, type, tags, id, 
             )
         } else {
             header = (
-                <Output id={type} label={name}> 
-                    <p>{name}</p>
-                </Output>
+                <Output id={type} label={name} /> 
             )
         }
     }

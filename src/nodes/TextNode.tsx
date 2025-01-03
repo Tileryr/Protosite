@@ -1,11 +1,10 @@
 import { ChangeEvent, useCallback, useState } from 'react'
 import { Node, NodeProps, useReactFlow } from '@xyflow/react'
 
-import ElementBase, { ElementTag } from '../components/BaseElementNode.js'
-import { Output } from '../components/Ports'
 import { ElementNodeData } from '../components/types.js'
+import OutputNode from '../components/BaseOutputNode.js'
 
-type TextNodeData = ElementNodeData & {
+type TextNodeData = {
     string: string
 }
 
@@ -21,17 +20,13 @@ export default function TextNode({ id, data }: NodeProps<TextNode>) {
         console.log(event.target.value)
         console.log(data)
     }, [])
-
-    const tags: ElementTag[] = [
-        { name: "HTML", value: "body" }
-    ]
         
     return (
-        <ElementBase name="Text" height={300} output={true} type='string' tags={tags} id={id} data={data}>
+        <OutputNode name="Text" height={300} type='string'>
             <textarea className='w-full h-full nodrag' onChange={onChange} aria-label='text'>
 
             </textarea>
-        </ElementBase>
+        </OutputNode>
     )
 }
 
