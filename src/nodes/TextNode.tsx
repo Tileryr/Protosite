@@ -1,17 +1,13 @@
 import { ChangeEvent, useCallback, useState } from 'react'
 import { Node, NodeProps, useReactFlow } from '@xyflow/react'
 
-import { ElementNodeData } from '../components/types.js'
 import OutputNode from '../components/BaseOutputNode.js'
-import BaseElementNode from '../components/BaseElementNode.js'
 
 type TextNodeData = {
     string: string
 }
 
 type TextNode = Node<TextNodeData, 'text'>
-
-// DO RIGHT NOW SEPERATE TEXT FROM BASEELEMENT
 
 export default function TextNode({ id, data }: NodeProps<TextNode>) {
     const { updateNodeData } = useReactFlow();

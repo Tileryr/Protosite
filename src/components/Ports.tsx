@@ -27,14 +27,12 @@ export function Port({ type, position, id, label, isConnectable, children }: {
 
     let [handlePos, setHandlePos] = useState(12)
 
-    useEffect(() => {
-        setHandlePos(ref.current ? ref.current.offsetTop + 12 : 0)
-        UpdateNodeInternals(nodeId);
-    }, [ref.current])
-
+    useEffect(() => setHandlePos(ref.current ? ref.current.offsetTop + 12 : 0), [ref.current?.offsetTop])
+    useEffect(() => UpdateNodeInternals(nodeId), [handlePos])
+    
     return (
         <div ref={ref} className={position === Position.Left ? 'justify-self-start' : 'justify-self-end' }>
-            <label onClick={() => console.log(nodeData)}>{label}</label>
+            <label onClick={() => {console.log(handlePos); UpdateNodeInternals(nodeId)}}>{label}</label>
             {children}
             <Handle 
                 id={id}
@@ -56,7 +54,7 @@ export function Output({ id, label, children }: {
     return (
         <Port
             id={id}
-            label={label ? label : ''}
+            label={label ? label : 'ASD'}
             type='source' 
             position={Position.Left}
             isConnectable={() => true}
