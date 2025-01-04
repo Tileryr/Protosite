@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, Children } from "react";
+import React, { useRef, useEffect, Children, useState } from "react";
 import {
     Handle, 
     Position,
@@ -6,12 +6,11 @@ import {
     useNodesData,
     useNodeId,
     useReactFlow,
-    IsValidConnection
+    useUpdateNodeInternals,
 } from "@xyflow/react";
 
 import { HTMLNode } from "../nodes/HtmlNode";
 import { DataType, ElementObject } from "./types";
-import { Field } from "./SelectField";
 
 export function Port({ type, position, id, label, isConnectable, children }: {
     type: 'source' | 'target'
@@ -21,9 +20,17 @@ export function Port({ type, position, id, label, isConnectable, children }: {
     isConnectable: () => boolean
     children?: React.ReactElement
 }) {
+    const UpdateNodeInternals = useUpdateNodeInternals();
     const ref = useRef<HTMLDivElement>(null);
     const nodeId = useNodeId()!;
     const nodeData = useNodesData(nodeId);
+
+    let [handlePos, setHandlePos] = useState(12)
+
+    useEffect(() => {
+        setHandlePos(ref.current ? ref.current.offsetTop + 12 : 0)
+        UpdateNodeInternals(nodeId);
+    }, [ref.current])
 
     return (
         <div ref={ref} className={position === Position.Left ? 'justify-self-start' : 'justify-self-end' }>
@@ -33,7 +40,7 @@ export function Port({ type, position, id, label, isConnectable, children }: {
                 id={id}
                 type={type}
                 position={position}
-                style={{ top: ref.current ? ref.current.offsetTop + 12 : 12 }}
+                style={{ top: handlePos }}
                 isConnectable={isConnectable()}
             />
         </div>

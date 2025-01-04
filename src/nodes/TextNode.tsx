@@ -3,6 +3,7 @@ import { Node, NodeProps, useReactFlow } from '@xyflow/react'
 
 import { ElementNodeData } from '../components/types.js'
 import OutputNode from '../components/BaseOutputNode.js'
+import BaseElementNode from '../components/BaseElementNode.js'
 
 type TextNodeData = {
     string: string
@@ -22,7 +23,7 @@ export default function TextNode({ id, data }: NodeProps<TextNode>) {
     }, [])
         
     return (
-        <OutputNode name="Text" height={300} type='string'>
+        <OutputNode name="Text" height={200} type='string'>
             <textarea className='w-full h-full nodrag' onChange={onChange} aria-label='text'>
 
             </textarea>

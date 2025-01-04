@@ -1,9 +1,10 @@
-import { PropsWithChildren, useState } from "react";
-import { Output, Port } from "./Ports";
+import { PropsWithChildren, useCallback, useState } from "react";
+import { Output } from "./Ports";
 import { DataType, ElementNodeData } from "./types";
 import SelectField from "./SelectField";
-import { useReactFlow, Node } from "@xyflow/react";
+import { useReactFlow } from "@xyflow/react";
 import { updateElement } from "../utilities";
+import NodeShell from "./NodeShell";
 
 
 export interface ElementTag {
@@ -33,47 +34,58 @@ interface RootNode {
 
 type BaseNode = ElementNode | RootNode  
 
-export default function BaseElementNode({ name, height, output, type, tags, id, data, children }: PropsWithChildren<BaseNode>) {
+export default function BaseElementNode({ name, height, output, tags, id, data, children }: PropsWithChildren<BaseNode>) {
     const { updateNodeData } = useReactFlow();
     const [tag, setTag] = useState(tags[0].value);
+    const [renderOrder, setRenderOrder] = useState("0")
+
     let header = <p>{name}</p>
 
-    const tagChange = (newTag: keyof HTMLElementTagNameMap): void => {
+    const onTagChange = (newTag: keyof HTMLElementTagNameMap): void => {
         setTag(newTag)
         updateNodeData(id, { element: updateElement(data, 'tag', newTag) })
         console.log(newTag)
     }
 
+    const changeRenderOrder = (value: string) => {
+        let formattedValue = value ? Number(value).toString() : ''
+        setRenderOrder(formattedValue)
+        updateNodeData(id, { element: updateElement(data, 'renderOrder', Number(value))})
+        console.log(value)
+    }
+
     if (output) {
         if(tags.length > 1) {
             header = (
-                <Output id={type}> 
+                <Output id={"element"}> 
                     <SelectField<keyof HTMLElementTagNameMap> 
                     options={tags} 
-                    onChange={tagChange} 
+                    onChange={onTagChange} 
                     currentValue={tag} 
                     /> 
                 </Output>
             )
         } else {
             header = (
-                <Output id={type} label={name} /> 
+                <Output id={"element"} label={name} /> 
             )
         }
     }
 
-    
     return (
-        <div className='w-64 border-solid border-1 border-black rounded-md bg-white shadow-xl' style={{height: height ? `${height}px` : 'auto'}}>
-            <header className='p-2 bg-gray-200 rounded-t-md'>
-                {header}
-            </header>
-
-            <div className='p-2 rounded-b-md'>
-                <div className='grid grid-flow-row grid-cols-1'>
-                    {children}
-                </div>
-            </div>
-        </div>
+        <NodeShell header={header} height={height}>
+            {children}
+            <label className="text-xs justify-self-end">
+                Render Order:
+                <input 
+                    type="number" 
+                    className="w-14" 
+                    onMouseDownCapture={(event) => event.stopPropagation()}
+                    value={renderOrder} 
+                    onChange={(event) => changeRenderOrder(event.target.value)}
+                    onBlur={() => {!renderOrder && (changeRenderOrder("0")); console.log("a")}}
+                />
+            </label>
+        </NodeShell>
     );
 }

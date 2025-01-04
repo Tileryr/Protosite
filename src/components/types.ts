@@ -1,10 +1,11 @@
-import * as flow from "@xyflow/react"
-
 export type DataType = "element" | "string" | "number"
+
+//Move unsure properies to main data objects?
 
 export interface ElementObject {
     tag: keyof HTMLElementTagNameMap
     children: ElementObject[]
+    renderOrder: number
     text?: string
 }
 

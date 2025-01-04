@@ -1,5 +1,5 @@
 import { Node, useNodesData } from "@xyflow/react"
-import { ElementObject, HTMLElementNodeData } from "./components/types"
+import { ElementObject, ElementNodeData } from "./components/types"
 
 export function convertHtml(root: ElementObject ) {
     const body = document.createElement('div')
@@ -8,8 +8,8 @@ export function convertHtml(root: ElementObject ) {
 }
 
 const addChildren = (parentNode: ElementObject, parentElement: HTMLElement) => {
-    //DO LATER: ADD PROPER TYPE FOR HTMLELEMENTNODES
     const children = parentNode.children
+    children.sort((a, b) => b.renderOrder - a.renderOrder)
     children.forEach((child) => {
         const childElement = document.createElement(child.tag)
         child.text ? childElement.textContent = child.text : null
