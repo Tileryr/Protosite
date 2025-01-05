@@ -1,9 +1,9 @@
 import { PropsWithChildren, useCallback, useState } from "react";
-import { Output } from "./Ports";
-import { DataType, ElementNodeData } from "./types";
-import SelectField from "./SelectField";
+import { Input, Output } from "./Ports";
+import { DataType, ElementNodeData } from "../types";
+import SelectField from "../SelectField";
 import { useReactFlow } from "@xyflow/react";
-import { updateElement } from "../utilities";
+import { updateElement } from "../../utilities";
 import NodeShell from "./NodeShell";
 
 
@@ -75,6 +75,13 @@ export default function BaseElementNode({ name, height, output, tags, id, data, 
     return (
         <NodeShell header={header} height={height}>
             {children}
+            <div className="mt-0"></div>
+            <Input
+                id="styling"
+                label="Styling"
+                limit={false}
+                property="styling"
+            />
             <label className="text-xs justify-self-end">
                 Render Order:
                 <input 

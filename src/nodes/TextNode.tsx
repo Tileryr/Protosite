@@ -1,7 +1,7 @@
 import { ChangeEvent, useCallback, useState } from 'react'
 import { Node, NodeProps, useReactFlow } from '@xyflow/react'
 
-import OutputNode from '../components/BaseOutputNode.js'
+import OutputNode from '../components/Nodes/BaseOutputNode.js'
 
 type TextNodeData = {
     string: string

@@ -13,6 +13,14 @@ const addChildren = (parentNode: ElementObject, parentElement: HTMLElement) => {
     children.forEach((child) => {
         const childElement = document.createElement(child.tag)
         child.text ? childElement.textContent = child.text : null
+
+        child.styling.forEach(style => {
+            for (const [property, value] of Object.entries(style)) {
+                childElement.style[<any>property] = value
+            }
+            Object.entries(style)
+        });
+
         parentElement.append(childElement)
         addChildren(child, childElement)
     });

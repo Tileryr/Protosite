@@ -28,8 +28,11 @@ import HtmlNode from './nodes/HtmlNode';
 import DivNode from './nodes/DivNode';
 import TextNode from './nodes/TextNode';
 import ParagraphNode from './nodes/ParagraphNode';
+import StylingNode from './nodes/StylingNode';
+
 import NodeMenu from './components/NodeMenu';
 import { randomID } from './utilities';
+
 
 const initialNodes: Node[] = [
   {
@@ -66,7 +69,7 @@ const initialNodes: Node[] = [
       string: ''
     },
     position: { x: 100, y: 100 },
-    type: 'text',
+    type: 'styling',
   },
 ];
 
@@ -78,6 +81,7 @@ const nodeTypes: NodeTypes = {
   'section': DivNode,
   'paragraph': ParagraphNode,
   'text': TextNode,
+  'styling': StylingNode,
 };
 
 function Flow() {
@@ -113,7 +117,7 @@ function Flow() {
   );
 }
 
-export type allNodeTypes = 'html' | 'section' |'paragraph' | 'text'
+export type allNodeTypes = 'html' | 'section' |'paragraph' | 'text' | 'styling'
 
 function FlowProvider({setHtml}: {setHtml: React.Dispatch<React.SetStateAction<string>>}) {
   const { addNodes, screenToFlowPosition } = useReactFlow();

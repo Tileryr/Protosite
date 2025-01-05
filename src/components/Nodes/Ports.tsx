@@ -9,8 +9,8 @@ import {
     useUpdateNodeInternals,
 } from "@xyflow/react";
 
-import { HTMLNode } from "../nodes/HtmlNode";
-import { DataType, ElementObject } from "./types";
+import { HTMLNode } from "../../nodes/HtmlNode";
+import { DataType, ElementObject } from "../types";
 
 export function Port({ type, position, id, label, isConnectable, children }: {
     type: 'source' | 'target'
@@ -29,10 +29,10 @@ export function Port({ type, position, id, label, isConnectable, children }: {
 
     useEffect(() => setHandlePos(ref.current ? ref.current.offsetTop + 12 : 0), [ref.current?.offsetTop])
     useEffect(() => UpdateNodeInternals(nodeId), [handlePos])
-    
+
     return (
         <div ref={ref} className={position === Position.Left ? 'justify-self-start' : 'justify-self-end' }>
-            <label onClick={() => {console.log(handlePos); UpdateNodeInternals(nodeId)}}>{label}</label>
+            <label onClick={() => console.log(nodeData?.data.element)}>{label}</label>
             {children}
             <Handle 
                 id={id}
@@ -71,7 +71,7 @@ export function Input(props: {
     limit?: boolean
     property: keyof ElementObject
 }) {
-    //Read what it is outputting
+    //do later: group stylings into big object
 
     const { updateNodeData } = useReactFlow(); 
     const nodeId = useNodeId()!;

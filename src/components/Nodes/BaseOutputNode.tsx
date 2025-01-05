@@ -1,6 +1,6 @@
 import { PropsWithChildren } from "react";
 import { Output } from "./Ports";
-import { DataType } from "./types";
+import { DataType } from "../types";
 import NodeShell from "./NodeShell";
 
 export default function OutputNode({ name, height, type, children }: PropsWithChildren<{

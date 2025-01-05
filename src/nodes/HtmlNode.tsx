@@ -1,11 +1,10 @@
-import { Input } from '../components/Ports'
+import { Input } from '../components/Nodes/Ports'
 
-import ElementBase, { ElementTag } from '../components/BaseElementNode'
+import ElementBase, { ElementTag } from '../components/Nodes/BaseElementNode'
 import { ElementNodeData } from '../components/types'
 
 import type { Node, NodeProps } from '@xyflow/react'
 
-// type HtmlNode = Node<{ children: Node[], element: string }, 'html'>
 type HTMLElementData = ElementNodeData & { children: Node[] }
 export type HTMLNode = Node<HTMLElementData>
 
