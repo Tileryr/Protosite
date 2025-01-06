@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, useCallback, useRef, useState } from 'react'
+import { ChangeEvent, FormEvent, useCallback, useEffect, useRef, useState } from 'react'
 import { Node, NodeProps, useReactFlow } from '@xyflow/react'
 
 import OutputNode from '../components/Nodes/BaseOutputNode.js'
@@ -9,6 +9,11 @@ type TextNodeData = {
 
 type TextNode = Node<TextNodeData, 'text'>
 
+interface TextSection {
+    start: number
+    end: number
+}
+
 export default function TextNode({ id, data }: NodeProps<TextNode>) {
     const { updateNodeData } = useReactFlow();
 
@@ -18,7 +23,7 @@ export default function TextNode({ id, data }: NodeProps<TextNode>) {
     const [htmlText, setHtmlText] = useState('')
 
     const [boldActived, setBoldActivated] = useState(false)
-    const [boldedText, setBoldedText] = useState<{start: number; end: number}[]>([])
+    const [boldedText, setBoldedText] = useState<TextSection[]>([])
 
     const onChange = (event: FormEvent<HTMLDivElement>) => {
         const newText = event.currentTarget.textContent ?? ''
@@ -39,30 +44,63 @@ export default function TextNode({ id, data }: NodeProps<TextNode>) {
             currentStart > currentEnd && ([currentStart, currentEnd] = [currentEnd, currentStart])
 
             let innerHTML = textFieldRef.current!.innerHTML
-    
-            // let newHTML = wrap(innerHTML, 'strong', start, end)
+
+            setHtmlText(innerHTML)
             setBoldedText(prevBoldedText => {
-                let mappedText = prevBoldedText.map(({start, end}) => {
+                let intersected = false
+
+                //Check intersections and change pairs based on that
+                let newBoldedPairs = prevBoldedText.map(({start, end}) => {
                     let intersections = checkIntersections(currentStart, currentEnd, start, end)
-                    return intersections ? intersections : {start, end}
+                    if(intersections) {
+                        intersected = true
+                        return intersections
+                    } else {
+                        return {start, end}
+                    }
+                })
+                
+                //If intersected then dont add to list
+                let returnedPairs = intersected ? newBoldedPairs : [...newBoldedPairs, {start: currentStart, end: currentEnd}]
+
+                // Remove duplicate items
+                let uniqueReturnedPairs = returnedPairs.filter((item, index, array) => {
+                    return index === array.findIndex((t) => (
+                        t.start === item.start && t.end === item.end
+                    ))
                 })
 
-                //If intersected then dont add to list
-                if(prevBoldedText.some(({start, end}) => checkIntersections(currentStart, currentEnd, start, end))) {
-                    console.log(prevBoldedText)
-                    console.log(mappedText)
-                    return mappedText
-                }
-
-                return [...mappedText, {start: currentStart, end: currentEnd}]
+                return uniqueReturnedPairs
             })
-
-            // let newHTML = insert(innerHTML, currentStart, '<strong>')
-            // textFieldRef.current!.innerHTML = newHTML
         }
-       
+        
         setBoldActivated(prev => !prev)
     }
+
+    const boldenHTML = (text: string, boldedPairs: TextSection[]) => {
+        let textRope: string[] = []
+        let lastEnd = 0
+
+        //MAKE ROPE
+        boldedPairs.forEach(pair => {
+            textRope.push(text.substring(lastEnd, pair.start))
+            textRope.push(text.substring(pair.start, pair.end))
+            lastEnd = pair.end
+        })
+
+        textRope.push(text.substring(lastEnd))
+
+        //ADD TAGS
+        textRope = textRope.map((section, index) => {
+            //Return if even
+            if(index % 2 === 0) {return section}
+            return `<bold>${section}</bold>`
+        })
+        
+        console.log(textRope.join(''))
+    }
+
+    useEffect(() => boldenHTML(htmlText, boldedText), [htmlText, boldedText])
 
     return (
         <OutputNode name="Text" height={200} type='string'>
@@ -85,7 +123,27 @@ function wrap(string: string, wrapper: string, start: number, end: number) {
 }
 
 function checkIntersections(mainStart: number, mainEnd: number, comparedStart: number, comparedEnd: number) {
+    let newStart = comparedStart
+    let newEnd = comparedEnd
+    let intersected = false
+
+    // console.log([mainStart, mainEnd, comparedStart, comparedEnd])
+
+    if(mainStart < comparedStart && mainEnd > comparedStart) {
+        newStart = mainStart
+        intersected = true
+    }
+
+    if(mainEnd > comparedEnd && mainStart < comparedEnd) {
+        newEnd = mainEnd
+        intersected = true
+    }
+
+    // console.log([mainStart, mainEnd, comparedStart, comparedEnd])
+
+    return intersected ? {start: newStart, end: newEnd} : false
     // |  \ |  \ => |      |
+
     if(mainStart < comparedEnd && mainStart > comparedStart && mainEnd > comparedEnd) {
         console.log("IDK")
         return {start: comparedStart, end: mainEnd}
