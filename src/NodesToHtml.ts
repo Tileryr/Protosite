@@ -18,7 +18,6 @@ const addChildren = (parentNode: ElementObject, parentElement: HTMLElement) => {
             for (const [property, value] of Object.entries(style)) {
                 childElement.style[<any>property] = value
             }
-            Object.entries(style)
         });
 
         parentElement.append(childElement)
