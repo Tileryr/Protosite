@@ -40,6 +40,17 @@ export default function TextNode({ id, data }: NodeProps<TextNode>) {
             let currentStart = selection.anchorOffset
             let currentEnd = selection.focusOffset
 
+            //Recalculate
+            const startRange = document.createRange()
+            startRange.setStart(textFieldRef.current!.firstChild!, 0)
+            startRange.setEnd(selection.anchorNode!, currentStart)
+            currentStart = startRange.toString().length
+
+            const endRange = document.createRange()
+            endRange.setStart(textFieldRef.current!.firstChild!, 0)
+            endRange.setEnd(selection.focusNode!, currentEnd)
+            currentEnd = endRange.toString().length
+
             //Swap so current start is always lesser
             currentStart > currentEnd && ([currentStart, currentEnd] = [currentEnd, currentStart])
 
@@ -70,7 +81,10 @@ export default function TextNode({ id, data }: NodeProps<TextNode>) {
                     ))
                 })
 
-                return uniqueReturnedPairs
+                // Sort
+                let sortedUniquePairs = uniqueReturnedPairs.sort((a, b) => a.start - b.start)
+                console.log(sortedUniquePairs)
+                return sortedUniquePairs
             })
         }
         
@@ -94,32 +108,25 @@ export default function TextNode({ id, data }: NodeProps<TextNode>) {
         textRope = textRope.map((section, index) => {
             //Return if even
             if(index % 2 === 0) {return section}
-            return `<bold>${section}</bold>`
+            return `<strong>${section}</strong>`
         })
-        
-        console.log(textRope.join(''))
+        let newHtml = textRope.join('')
+        if(textFieldRef.current!.innerHTML !== newHtml) {
+            textFieldRef.current!.innerHTML = newHtml
+            // console.log(textFieldRef.current!.innerHTML)
+        }
     }
 
-    useEffect(() => boldenHTML(htmlText, boldedText), [htmlText, boldedText])
+    useEffect(() => boldenHTML(text, boldedText), [boldedText])
 
     return (
         <OutputNode name="Text" height={200} type='string'>
             <button className={`hover:bg-${boldActived ? 'gray' : 'sky'}-300`} onClick={boldText}>B</button>
             <button className='hover:bg-gray-300' onClick={() => console.log(boldedText)}>I</button>
-            <div contentEditable className='w-full h-full nodrag' ref={textFieldRef} onInput={onChange} aria-label='text'></div>
+
+            <div contentEditable className='w-full h-full nodrag' ref={textFieldRef} onInput={onChange}></div>
         </OutputNode>
     )
-}
-
-function insert(string: string, index: number, insertingString: string) {
-    return string.substring(0, index) + insertingString + string.substring(index);
-}
-
-function wrap(string: string, wrapper: string, start: number, end: number) {
-    let wrappedString
-    wrappedString = insert(string, start, `<${wrapper}>`)
-    wrappedString = insert(wrappedString, end + wrapper.length + 2, `</${wrapper}>`)
-    return wrappedString
 }
 
 function checkIntersections(mainStart: number, mainEnd: number, comparedStart: number, comparedEnd: number) {
@@ -140,29 +147,5 @@ function checkIntersections(mainStart: number, mainEnd: number, comparedStart: n
     }
 
     // console.log([mainStart, mainEnd, comparedStart, comparedEnd])
-
     return intersected ? {start: newStart, end: newEnd} : false
-    // |  \ |  \ => |      |
-
-    if(mainStart < comparedEnd && mainStart > comparedStart && mainEnd > comparedEnd) {
-        console.log("IDK")
-        return {start: comparedStart, end: mainEnd}
-    }
-    // \ |  \ | => |      |
-    if(mainEnd < comparedEnd && mainEnd > comparedStart && mainStart < comparedStart ) {
-        console.log("IKR")
-        return {start: mainStart, end: comparedEnd}
-    }
-    // \ |   | \ => |       |
-    if(mainStart < comparedStart && mainEnd > comparedEnd) {
-        console.log("HEY")
-        return {start: mainStart, end: mainEnd}
-    }
-    // | \   \ | => |       |
-    if(mainStart > comparedStart && mainEnd < comparedEnd) {
-        console.log("WOW")
-        return {start: comparedStart, end: comparedEnd}
-    }
-
-    return false
 }
