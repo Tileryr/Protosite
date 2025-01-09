@@ -22,7 +22,7 @@ export default function TextNode({ id, data }: NodeProps<TextNode>) {
     const [text, setText] = useState('');
     const [htmlText, setHtmlText] = useState('')
 
-    const [selectedIndex, setSelectedIndex] = useState(0)
+    const [selectedIndex, setSelectedIndex] = useState<number>(0)
 
     const [boldActived, setBoldActivated] = useState(false)
     const [boldedText, setBoldedText] = useState<TextSection[]>([])
@@ -35,7 +35,7 @@ export default function TextNode({ id, data }: NodeProps<TextNode>) {
         let selectionEnd = calculateSelection(selection.focusNode!, selection.focusOffset)
         selectionStart = selectionStart < selectionEnd ? selectionStart : selectionEnd
         setSelectedIndex(selectionStart)
-
+        console.log(selectionStart)
         let change = newText.length - text.length
 
         setText(newText)
@@ -83,6 +83,7 @@ export default function TextNode({ id, data }: NodeProps<TextNode>) {
                 // Sort
                 let sortedUniquePairs = uniqueReturnedPairs.sort((a, b) => a.start - b.start)
                 console.log(sortedUniquePairs)
+                boldenHTML(text, sortedUniquePairs, selection.getRangeAt(0))
                 return sortedUniquePairs
             })
         }
@@ -90,7 +91,7 @@ export default function TextNode({ id, data }: NodeProps<TextNode>) {
         setBoldActivated(prev => !prev)
     }
 
-    const boldenHTML = (text: string, boldedPairs: TextSection[]) => {
+    const boldenHTML = (text: string, boldedPairs: TextSection[], range: Range) => {
         let textRope: string[] = []
         let lastEnd = 0
 
@@ -103,25 +104,45 @@ export default function TextNode({ id, data }: NodeProps<TextNode>) {
 
         textRope.push(text.substring(lastEnd))
 
+        let oldRope = textRope
         //ADD TAGS
         textRope = textRope.map((section, index) => {
             //Return if even
             if(index % 2 === 0) {return section}
             return `<strong>${section}</strong>`
         })
+
         let newHtml = textRope.join('')
+
+        // oldRope.map((string, index) => {
+        //     if(oldRope[index] === textRope[index]) {
+        //         range.deleteContents()
+        //         range.insertNode(document.createTextNode(oldRope[index]))
+        //     }
+        // })
+
         if(textFieldRef.current!.innerHTML !== encodeURIComponent(newHtml)) {
             textFieldRef.current!.innerHTML = newHtml
-            let selection = window.getSelection()!
-            selection.anchorNode
-            selection.anchorOffset
-            window.getSelection()?.setPosition(selection.anchorNode, selection.anchorOffset + 1)
-            console.log(encodeURIComponent(newHtml))
-            console.log(textFieldRef.current!.innerHTML)
+
+            let childNodes = textFieldRef.current!.childNodes
+            let lengthLeft = selectedIndex
+            for (let index = 0; index < childNodes.length; index++) {
+                let node = childNodes[index]
+                let textNode = node.textContent!
+                if (lengthLeft - textNode.length <= 0) {
+                    console.log(textNode)
+                    console.log(lengthLeft - textNode.length)
+                    
+                    window.getSelection()!.setPosition(node, lengthLeft)
+                    break
+                } 
+                lengthLeft -= textNode.length
+            }
         }
     }
 
     const calculateSelection = (node: globalThis.Node, index: number) => {
+        console.log(node)
         const start = textFieldRef.current!.firstChild!
         const range = document.createRange()
         range.setStart(start, 0)
@@ -144,13 +165,13 @@ export default function TextNode({ id, data }: NodeProps<TextNode>) {
         return newPairs
     }
 
-    useEffect(() => boldenHTML(text, boldedText), [boldedText])
-    useEffect(() => console.log(selectedIndex), [selectedIndex])
+    // useEffect(() => boldenHTML(text, boldedText), [boldedText])
+    // useEffect(() => console.log(selectedIndex), [selectedIndex])
     // window.getSelection()?.setPosition(textFieldRef.current, selectedIndex)
     return (
         <OutputNode name="Text" height={200} type='string'>
             <button className={`hover:bg-${boldActived ? 'gray' : 'sky'}-300`} onClick={boldText}>B</button>
-            <button className='hover:bg-gray-300' onClick={() => console.log(boldedText)}>I</button>
+            <button className='hover:bg-gray-300' onClick={() => console.log(window.getSelection()!.anchorNode)}>I</button>
 
             <div contentEditable className='w-full h-full nodrag' ref={textFieldRef} onInput={onChange}></div>
         </OutputNode>
