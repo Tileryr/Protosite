@@ -46,7 +46,13 @@ export default function TextNode({ id, data }: NodeProps<TextNode>) {
     const boldText = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         event.preventDefault()
         let selection = window.getSelection()
-        if (selection) {
+        if (selection && 
+            //if textfield is not the selection and the selection is text inside the field
+            textFieldRef.current!.contains(selection?.anchorNode) && 
+            textFieldRef.current!.contains(selection?.focusNode) &&
+            textFieldRef.current !== selection?.focusNode &&
+            textFieldRef.current !== selection?.anchorNode
+        ) {
             let currentStart = calculateSelection(selection.anchorNode!, selection.anchorOffset)
             let currentEnd = calculateSelection(selection.focusNode!, selection.focusOffset)
 
@@ -60,15 +66,45 @@ export default function TextNode({ id, data }: NodeProps<TextNode>) {
                 let intersected = false
 
                 //Check intersections and change pairs based on that
-                let newBoldedPairs = prevBoldedText.map(({start, end}) => {
+                console.log("BOLDY")
+                let newBoldedPairs = prevBoldedText.map(({start, end}, index, array) => {
                     let intersections = checkIntersections(currentStart, currentEnd, start, end)
-                    if(intersections) {
-                        intersected = true
-                        return intersections
-                    } else {
+
+                    console.log(intersections)
+
+                    if(!intersections) {
                         return {start, end}
                     }
-                })
+
+                    intersected = true
+                    
+                    if(boldActived) {
+                        console.log("INNERT")
+                        switch (intersections) {
+                            case 'instart-inend':
+                                console.log("IN")
+                                return [{start: start, end: currentStart}, {start: currentEnd, end: end}]
+                            case 'instart-outend':
+                                return {start: start, end: currentStart}
+                            case 'outstart-inend':
+                                return {start: currentEnd, end: end}
+                            case 'outstart-outend':
+                                return {start: 0, end: 0}
+                        }
+                    }
+                    
+
+                    switch (intersections) {
+                        case 'instart-inend':
+                            return {start: start, end: end}
+                        case 'instart-outend':
+                            return {start: start, end: currentEnd}
+                        case 'outstart-inend':
+                            return {start: currentStart, end: end}
+                        case 'outstart-outend':
+                            return {start: currentStart, end: currentEnd}
+                    }
+                }).flat()
                 
                 //If intersected then dont add to list
                 let returnedPairs = intersected ? newBoldedPairs : [...newBoldedPairs, {start: currentStart, end: currentEnd}]
@@ -82,8 +118,10 @@ export default function TextNode({ id, data }: NodeProps<TextNode>) {
 
                 // Sort
                 let sortedUniquePairs = uniqueReturnedPairs.sort((a, b) => a.start - b.start)
-                console.log(sortedUniquePairs)
-                boldenHTML(text, sortedUniquePairs, selection.getRangeAt(0))
+
+                sortedUniquePairs = sortedUniquePairs.filter((element) => element.start !== element.end )
+                
+                boldenHTML(text, sortedUniquePairs)
                 return sortedUniquePairs
             })
         }
@@ -91,7 +129,7 @@ export default function TextNode({ id, data }: NodeProps<TextNode>) {
         setBoldActivated(prev => !prev)
     }
 
-    const boldenHTML = (text: string, boldedPairs: TextSection[], range: Range) => {
+    const boldenHTML = (text: string, boldedPairs: TextSection[]) => {
         let textRope: string[] = []
         let lastEnd = 0
 
@@ -104,7 +142,6 @@ export default function TextNode({ id, data }: NodeProps<TextNode>) {
 
         textRope.push(text.substring(lastEnd))
 
-        let oldRope = textRope
         //ADD TAGS
         textRope = textRope.map((section, index) => {
             //Return if even
@@ -114,13 +151,6 @@ export default function TextNode({ id, data }: NodeProps<TextNode>) {
 
         let newHtml = textRope.join('')
 
-        // oldRope.map((string, index) => {
-        //     if(oldRope[index] === textRope[index]) {
-        //         range.deleteContents()
-        //         range.insertNode(document.createTextNode(oldRope[index]))
-        //     }
-        // })
-
         if(textFieldRef.current!.innerHTML !== encodeURIComponent(newHtml)) {
             textFieldRef.current!.innerHTML = newHtml
 
@@ -128,15 +158,12 @@ export default function TextNode({ id, data }: NodeProps<TextNode>) {
             let lengthLeft = selectedIndex
             for (let index = 0; index < childNodes.length; index++) {
                 let node = childNodes[index]
-                let textNode = node.textContent!
-                if (lengthLeft - textNode.length <= 0) {
-                    console.log(textNode)
-                    console.log(lengthLeft - textNode.length)
-                    
-                    window.getSelection()!.setPosition(node, lengthLeft)
+                let nodeText = node.textContent!
+                if (lengthLeft - nodeText.length <= 0) {
+                    window.getSelection()!.setPosition(node.firstChild, lengthLeft)
                     break
                 } 
-                lengthLeft -= textNode.length
+                lengthLeft -= nodeText.length
             }
         }
     }
@@ -154,47 +181,64 @@ export default function TextNode({ id, data }: NodeProps<TextNode>) {
         let newPairs = pairs.map(({start, end}) => {
             let newEnd = end
             let newStart = start
-            if(end > changeIndex) {
+            if(end >= changeIndex - changeAmount) {
                 newEnd += changeAmount
-                if(start > changeIndex) {
+                if(start >= changeIndex - changeAmount) {
                     newStart += changeAmount
                 }
             }
             return {start: newStart, end: newEnd}
         })
+        newPairs = newPairs.filter((element) => element.start !== element.end )
         return newPairs
     }
 
-    // useEffect(() => boldenHTML(text, boldedText), [boldedText])
-    // useEffect(() => console.log(selectedIndex), [selectedIndex])
-    // window.getSelection()?.setPosition(textFieldRef.current, selectedIndex)
     return (
         <OutputNode name="Text" height={200} type='string'>
-            <button className={`hover:bg-${boldActived ? 'gray' : 'sky'}-300`} onClick={boldText}>B</button>
-            <button className='hover:bg-gray-300' onClick={() => console.log(window.getSelection()!.anchorNode)}>I</button>
+            <button style={{background: boldActived ? 'blue' : 'rgb(255, 255, 255)'}} onClick={boldText}>B</button>
+            <button className='hover:bg-gray-300' onClick={() => console.log(boldedText)}>I</button>
 
             <div contentEditable className='w-full h-full nodrag' ref={textFieldRef} onInput={onChange}></div>
         </OutputNode>
     )
 }
 
-function checkIntersections(mainStart: number, mainEnd: number, comparedStart: number, comparedEnd: number) {
-    let newStart = comparedStart
-    let newEnd = comparedEnd
-    let intersected = false
+function checkIntersections(mainStart: number, mainEnd: number, comparedStart: number, comparedEnd: number): IntersectionTypes | '' {
+    let intersectionStart: StartAlignment = 'outstart'
+    let intersectionEnd: EndAlignment = 'outend'
+    let intersected = true
 
-    // console.log([mainStart, mainEnd, comparedStart, comparedEnd])
+    // if(mainStart <= comparedStart && mainEnd >= comparedStart) {
+    //     intersectionStart = "outstart"
+    // } else {
+    //     intersectionStart = "instart"
+    //     intersected = true
+    // }
 
-    if(mainStart < comparedStart && mainEnd > comparedStart) {
-        newStart = mainStart
-        intersected = true
+    // if(mainEnd >= comparedEnd && mainStart <= comparedEnd) {
+    //     intersectionEnd = "outend"
+    // } else {
+    //     intersectionEnd = "inend"
+    //     intersected = true
+    // }
+    // if both are outside a boundary
+    if (mainStart > comparedEnd && mainEnd > comparedEnd ||
+        mainStart < comparedStart && mainEnd < comparedStart
+    ) {
+        intersected = false
+    }
+    
+    if (mainStart >= comparedStart && mainStart <= comparedEnd) {
+        intersectionStart = 'instart'
     }
 
-    if(mainEnd > comparedEnd && mainStart < comparedEnd) {
-        newEnd = mainEnd
-        intersected = true
+    if (mainEnd >= comparedStart && mainEnd <= comparedEnd) {
+        intersectionEnd = 'inend'
     }
 
-    // console.log([mainStart, mainEnd, comparedStart, comparedEnd])
-    return intersected ? {start: newStart, end: newEnd} : false
+    return intersected ? `${intersectionStart}-${intersectionEnd}` : ''
 }
+
+type StartAlignment = 'instart' | 'outstart'
+type EndAlignment = 'inend' | 'outend'
+type IntersectionTypes = `${StartAlignment}-${EndAlignment}`
