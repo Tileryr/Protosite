@@ -6,3 +6,8 @@
   background: white;
   background-color: red;
 }
+
+/* for weird text editor bug */
+b {
+  font-weight: normal
+}
