@@ -12,7 +12,7 @@ const addChildren = (parentNode: ElementObject, parentElement: HTMLElement) => {
     children.sort((a, b) => b.renderOrder - a.renderOrder)
     children.forEach((child) => {
         const childElement = document.createElement(child.tag)
-        child.text ? childElement.textContent = child.text : null
+        child.text ? childElement.innerHTML = child.text : null
 
         child.styling.forEach(style => {
             for (const [property, value] of Object.entries(style)) {

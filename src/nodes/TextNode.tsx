@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, useCallback, useEffect, useRef, useState } from 'react'
+import { ChangeEvent, FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Node, NodeProps, useReactFlow } from '@xyflow/react'
 
 import OutputNode from '../components/Nodes/BaseOutputNode.js'
@@ -14,6 +14,13 @@ interface TextSection {
     end: number
 }
 
+type ModifierSet = Record<Modifiers, ModifierInfo>
+type Modifiers = 'bold' | 'italicize'
+interface ModifierInfo {
+    sections: TextSection[]
+    tag: string
+}
+
 export default function TextNode({ id, data }: NodeProps<TextNode>) {
     const { updateNodeData } = useReactFlow();
 
@@ -23,7 +30,17 @@ export default function TextNode({ id, data }: NodeProps<TextNode>) {
     const [htmlText, setHtmlText] = useState('')
 
     const [boldActived, setBoldActivated] = useState(false)
+    const [boldedCache, setBoldedCache] = useState<TextSection[]>([])
     const [boldedText, setBoldedText] = useState<TextSection[]>([])
+
+    const [italicizedActived, setItalicizedActivated] = useState(false)
+    const [italicizedCache, setItalicizedCache] = useState<TextSection[]>([])
+    const [italicizedText, setItalicizedText] = useState<TextSection[]>([])
+
+    const modifierSet: ModifierSet = {
+        'bold': {sections: boldedText, tag: 'strong'},
+        'italicize': {sections: italicizedText, tag: 'em'}
+    }
 
     const onChange = (event: FormEvent<HTMLDivElement>) => {
         const newText = event.currentTarget.textContent ?? ''
@@ -35,14 +52,17 @@ export default function TextNode({ id, data }: NodeProps<TextNode>) {
 
         let change = newText.length - text.length
 
+        console.log(textFieldRef.current!.innerHTML)
         setText(newText)
-        setBoldedText((prevBoldedText) => recalculatePairs(prevBoldedText, selectionStart, change))
-        updateNodeData(id, { string: newText })
+        setBoldedCache((prevBoldedText) => recalculatePairs(prevBoldedText, selectionStart, change))
+        setItalicizedText((prevItalicizedText) => recalculatePairs(prevItalicizedText, selectionStart, change))
+
+        setHtmlText(textFieldRef.current!.innerHTML)
     }
 
-    const boldText = () => {
-        console.log(boldActived)
+    const modifyText = (modifier: Modifiers, setModifier: (value: React.SetStateAction<TextSection[]>) => void, activated: boolean, cache: TextSection[]) => {
         let selection = window.getSelection()
+        // console.log(selection)
         //if textfield is not the selection and the selection is text inside the field
         if (!(
             selection && 
@@ -60,16 +80,11 @@ export default function TextNode({ id, data }: NodeProps<TextNode>) {
         //Swap so current start is always lesser
         currentStart > currentEnd && ([currentStart, currentEnd] = [currentEnd, currentStart])
 
-        let innerHTML = textFieldRef.current!.innerHTML
-
-        setHtmlText(innerHTML)
-
-        setBoldedText(prevBoldedText => {
-            let intersected = !boldActived
-
+        setModifier((prevModifier) => {
+            let intersected = !activated
             
             //Check intersections and change pairs based on that
-            let newBoldedPairs = prevBoldedText.map(({start, end}) => {
+            let newModifiedPairs = cache.map(({start, end}) => {
                 let intersections = checkIntersections(currentStart, currentEnd, start, end)
 
                 if(!intersections) {
@@ -78,11 +93,9 @@ export default function TextNode({ id, data }: NodeProps<TextNode>) {
 
                 intersected = true
                 
-                
-                if(!boldActived) {
+                if(!activated) {
                     switch (intersections) {
                         case 'instart-inend':
-                            console.log("IN")
                             return [{start: start, end: currentStart}, {start: currentEnd, end: end}]
                         case 'instart-outend':
                             return {start: start, end: currentStart}
@@ -93,22 +106,22 @@ export default function TextNode({ id, data }: NodeProps<TextNode>) {
                     }
                 }
                 
-
                 switch (intersections) {
                     case 'instart-inend':
                         return {start: start, end: end}
                     case 'instart-outend':
+                        currentStart = start
                         return {start: start, end: currentEnd}
                     case 'outstart-inend':
+                        currentEnd = end
                         return {start: currentStart, end: end}
                     case 'outstart-outend':
                         return {start: currentStart, end: currentEnd}
                 }
             }).flat()
-            
-            console.log(intersected)
+
             //If intersected then dont add to list
-            let returnedPairs = intersected ? newBoldedPairs : [...newBoldedPairs, {start: currentStart, end: currentEnd}]
+            let returnedPairs = intersected ? newModifiedPairs : [...newModifiedPairs, {start: currentStart, end: currentEnd}]
 
             // Remove duplicate items
             let uniqueReturnedPairs = returnedPairs.filter((item, index, array) => {
@@ -121,47 +134,75 @@ export default function TextNode({ id, data }: NodeProps<TextNode>) {
             let sortedUniquePairs = uniqueReturnedPairs.sort((a, b) => a.start - b.start)
 
             sortedUniquePairs = sortedUniquePairs.filter((element) => element.start !== element.end )
-            
-            boldenHTML(text, sortedUniquePairs)
+
+            modifierSet[modifier].sections
+            modifyHTML(text, {...modifierSet, [modifier]: {...modifierSet[modifier], sections: sortedUniquePairs}})
             return sortedUniquePairs
         })
     }
 
-    const boldenHTML = (text: string, boldedPairs: TextSection[]) => {
-        let textRope: string[] = []
-        let lastEnd = 0
+    const modifyHTML = (text: string, allModifiers: ModifierSet) => {
+        textFieldRef.current!.replaceChildren(document.createTextNode(text))
 
-        //MAKE ROPE
-        boldedPairs.forEach(pair => {
-            textRope.push(text.substring(lastEnd, pair.start))
-            textRope.push(text.substring(pair.start, pair.end))
-            lastEnd = pair.end
-        })
+        // MAKE ROPE
+        Object.values(allModifiers).forEach(({tag, sections}) => {
+            function findIndexAndNode(index: number, root: Element) {
+                let newIndex = index
+                let currentIndex = newIndex
+                let indexNode: ChildNode = textFieldRef.current!.firstChild!
 
-        textRope.push(text.substring(lastEnd))
+                function addNodeIndex(node: Element,) {
+                    let childNodes = node.childNodes
+                    
+                    for (let index = 0; index < childNodes.length; index++) {
+                        let currentNode = childNodes[index]
+                        if(currentNode.nodeType === 3) {
+                            let text = currentNode.textContent!
 
-        //ADD TAGS
-        console.log(textRope)
-        console.count()
+                            if (currentIndex - text.length <= 0 && currentIndex > 0) {
+                                newIndex = currentIndex
+                                indexNode = currentNode
+                            }
 
-        textFieldRef.current?.replaceChildren()
+                            currentIndex -= text.length
+                            continue
+                        }
 
-        textRope.forEach((section, index) => {
-            //Return if even
-            if(index % 2 === 0) {
-                textFieldRef.current!.appendChild(document.createTextNode(section))
-                return 
+                        if(currentNode instanceof Element) {
+                            addNodeIndex(currentNode)
+                        }
+                    }
+                }
+
+                
+                addNodeIndex(root)
+                return {index: newIndex, node: indexNode}
             }
-            
-            let element = document.createElement('strong')
-            element.textContent = section
-            textFieldRef.current!.appendChild(element)
+
+            sections.forEach((pair) => {
+                console.log(pair)
+                let rangeStart = findIndexAndNode(pair.start, textFieldRef.current!)
+                let rangeEnd = findIndexAndNode(pair.end, textFieldRef.current!)
+
+                let range = document.createRange()
+                range.setStart(rangeStart.node, rangeStart.index)
+                range.setEnd(rangeEnd.node, rangeEnd.index)
+
+                let rangeContents = range.cloneContents()
+                let newNode = document.createElement(tag)
+                newNode.appendChild(rangeContents)
+
+                range.deleteContents()
+                range.insertNode(newNode)
+            })
         })
+        
+        setHtmlText(textFieldRef.current!.innerHTML)
     }
 
+    
     const calculateSelection = (node: globalThis.Node, index: number) => {
-        console.log(node)
-        const start = textFieldRef.current!.firstChild!
+        const start = textFieldRef.current!.firstChild ?? textFieldRef.current! 
         const range = document.createRange()
         range.setStart(start, 0)
         range.setEnd(node, index)
@@ -169,7 +210,6 @@ export default function TextNode({ id, data }: NodeProps<TextNode>) {
     }
     
     const recalculatePairs = (pairs: TextSection[], changeIndex: number, changeAmount: number) => {
-        console.log(pairs)
         let newPairs = pairs.map(({start, end}) => {
             let newEnd = end
             let newStart = start
@@ -192,21 +232,48 @@ export default function TextNode({ id, data }: NodeProps<TextNode>) {
             console.log(`changeAmount: ${changeAmount}`)
             console.log(`newStartChange: ${changeAmount + changeIndex + 1}`)
 
-            console.log([newStart, newEnd])
             return {start: newStart, end: newEnd}
         })
         newPairs = newPairs.filter((element) => element.start !== element.end )
         return newPairs
     }
 
-    useEffect(boldText, [boldActived])
+    const handlePaste = (event: React.ClipboardEvent<HTMLDivElement>) => {
+        const clipboardData = event.clipboardData.getData('text/plain')
+        const selection = window.getSelection()!
+        const range = selection.getRangeAt(0)
+        range.insertNode(document.createTextNode(clipboardData))
+        range.collapse()
+        event.preventDefault()
+    }
+
+    useEffect(() => {modifyText('bold', setBoldedText, boldActived, boldedCache); console.log(boldActived)}, [boldActived])
+    useEffect(() => {
+        setBoldedCache(boldedText)
+    }, [boldedText])
+
+    useEffect(() => modifyText('italicize', setItalicizedText, italicizedActived, italicizedCache), [italicizedActived])
+    useEffect(() => {
+        setItalicizedCache(italicizedText)
+    }, [italicizedText])
+
+    useEffect(() => updateNodeData(id, { string: htmlText}), [htmlText])
 
     return (
         <OutputNode name="Text" height={200} type='string'>
-            <button style={{background: boldActived ? 'blue' : 'rgb(255, 255, 255)'}} onClick={() => setBoldActivated(prev => !prev)}>B</button>
-            <button className='hover:bg-gray-300' onClick={() => console.log(boldedText)}>I</button>
+            <div>
+                <button 
+                style={{background: boldActived ? 'blue' : 'rgb(255, 255, 255)'}} 
+                onClick={() => setBoldActivated(prev => !prev)} 
+                className='w-8'>B</button>
+                <button
+                style={{background: italicizedActived ? 'blue' : 'rgb(255, 255, 255)'}}  
+                className='hover:bg-gray-300 w-8' 
+                onClick={() => setItalicizedActivated(prev => !prev)}>I</button>
+            </div>
+            
 
-            <div contentEditable className='w-full h-full nodrag' ref={textFieldRef} onInput={onChange}></div>
+            <div contentEditable onPaste={handlePaste} className='w-full h-full nodrag' ref={textFieldRef} onInput={onChange}></div>
         </OutputNode>
     )
 }
