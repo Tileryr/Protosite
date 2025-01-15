@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { FormEvent, useEffect, useRef, useState } from 'react'
 import { Node, NodeProps, useReactFlow } from '@xyflow/react'
 
 import OutputNode from '../components/Nodes/BaseOutputNode.js'
@@ -21,7 +21,7 @@ interface ModifierInfo {
     tag: string
 }
 
-export default function TextNode({ id, data }: NodeProps<TextNode>) {
+export default function TextNode({ id }: NodeProps<TextNode>) {
     const { updateNodeData } = useReactFlow();
 
     const textFieldRef = useRef<HTMLDivElement>(null)
@@ -200,7 +200,6 @@ export default function TextNode({ id, data }: NodeProps<TextNode>) {
         setHtmlText(textFieldRef.current!.innerHTML)
     }
 
-    
     const calculateSelection = (node: globalThis.Node, index: number) => {
         const start = textFieldRef.current!.firstChild ?? textFieldRef.current! 
         const range = document.createRange()

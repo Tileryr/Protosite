@@ -6,6 +6,6 @@ export function randomID() {
     );
 }
 
-export function updateElement(currentData: ElementNodeData, key: string, value: unknown) {
-    return {...currentData.element, [key]: value }
+export function updateElement(currentData: ElementNodeData, property: string, value: unknown) {
+    return {...currentData.element, [property]: value }
 }

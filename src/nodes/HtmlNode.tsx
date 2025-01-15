@@ -1,6 +1,6 @@
 import { Input } from '../components/Nodes/Ports'
 
-import ElementBase, { ElementTag } from '../components/Nodes/BaseElementNode'
+import ElementBase, { ElementTag } from '../components/Nodes/ElementBase'
 import { ElementNodeData } from '../components/types'
 
 import type { Node, NodeProps } from '@xyflow/react'

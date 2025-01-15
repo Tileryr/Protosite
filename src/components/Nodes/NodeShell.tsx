@@ -5,7 +5,7 @@ export default function NodeShell({header, height, children}: PropsWithChildren<
     height?: number
 }>) {
     return (
-        <div className='w-64 border-solid border-1 border-black rounded-md bg-white shadow-xl' style={{height: height ? `${height}px` : 'auto'}}>
+        <div className='w-64 border-solid border-1 border-black rounded-md bg-white shadow-xl shell' style={{height: height ? `${height}px` : 'auto'}}>
             <header className='p-2 bg-gray-200 rounded-t-md'>
                 {header}
             </header>

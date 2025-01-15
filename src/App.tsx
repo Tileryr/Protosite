@@ -16,6 +16,8 @@ import {
   type OnBeforeDelete,
   type IsValidConnection,
   useReactFlow,
+  NodeProps,
+  useNodesData,
 } from '@xyflow/react';
 
 import '@xyflow/react/dist/style.css';
@@ -32,6 +34,7 @@ import StylingNode from './nodes/StylingNode';
 
 import NodeMenu from './components/NodeMenu';
 import { randomID } from './utilities';
+import ListNode, { ListItemNode } from './nodes/List';
 
 
 const initialNodes: Node[] = [
@@ -82,7 +85,11 @@ const nodeTypes: NodeTypes = {
   'paragraph': ParagraphNode,
   'text': TextNode,
   'styling': StylingNode,
+  'list': ListNode,
+  'list-item': ListItemNode,
 };
+
+export type allNodeTypes = 'html' | 'section' |'paragraph' | 'text' | 'styling' | 'list' | 'list-item'
 
 function Flow() {
   const [html, setHtml] = useState<string>('')
@@ -117,8 +124,6 @@ function Flow() {
   );
 }
 
-export type allNodeTypes = 'html' | 'section' |'paragraph' | 'text' | 'styling'
-
 function FlowProvider({setHtml}: {setHtml: React.Dispatch<React.SetStateAction<string>>}) {
   const { addNodes, screenToFlowPosition } = useReactFlow();
   
@@ -150,9 +155,6 @@ function FlowProvider({setHtml}: {setHtml: React.Dispatch<React.SetStateAction<s
     return { nodes: filteredNodes, edges } 
   };
   
-  const isValidConnection: IsValidConnection = ({sourceHandle, targetHandle, source, target}) => {
-    return sourceHandle === targetHandle && target !== source
-  }
 
   const onContextMenu = (event: React.MouseEvent<HTMLDivElement>) => {
     event.preventDefault();
@@ -161,7 +163,7 @@ function FlowProvider({setHtml}: {setHtml: React.Dispatch<React.SetStateAction<s
     console.log("BLABBER")
   }
   
-  const addNode = (positionX: number, positionY: number, type: allNodeTypes) => {
+  const addNode = (positionX: number, positionY: number, type: allNodeTypes, data: Record<string, unknown>) => {
     const adjustedPos = screenToFlowPosition({
         x: positionX,
         y: positionY
@@ -169,10 +171,7 @@ function FlowProvider({setHtml}: {setHtml: React.Dispatch<React.SetStateAction<s
 
     const node: Node = {
       id: randomID(),
-      data: { element: {
-          tag: 'div',
-          children: []
-      }},
+      data: data,
       position: { x: adjustedPos.x, y: adjustedPos.y },
       type: type,
     }
@@ -185,11 +184,11 @@ function FlowProvider({setHtml}: {setHtml: React.Dispatch<React.SetStateAction<s
       <NodeMenu 
           position={contextMenuPosition}
           open={contextMenuToggled}
-          addNode={(type: allNodeTypes) => {
+          addNode={(type: allNodeTypes, data: Record<string, unknown>) => {
             let currentFlow = reactFlowRef.current
             let width = currentFlow ? currentFlow.offsetWidth : 0
             let height = currentFlow ? currentFlow.offsetHeight : 0
-            addNode(width/2, height/2, type)
+            addNode(width/2, height/2, type, data)
           }}
       />
 
@@ -202,7 +201,6 @@ function FlowProvider({setHtml}: {setHtml: React.Dispatch<React.SetStateAction<s
         onBeforeDelete={onBeforeDelete}
         fitView
         nodeTypes={nodeTypes}
-        isValidConnection={isValidConnection}
         onContextMenu={onContextMenu}
         onMouseDownCapture={() => setContextMenuToggled(false)}
         ref={reactFlowRef}

@@ -1,6 +1,6 @@
 import { PropsWithChildren, useCallback, useState } from "react";
 import { Input, Output } from "./Ports";
-import { DataType, ElementNodeData } from "../types";
+import { DataType, ElementNodeData, ElementObject } from "../types";
 import SelectField from "../SelectField";
 import { useReactFlow } from "@xyflow/react";
 import { updateElement } from "../../utilities";
@@ -34,7 +34,20 @@ interface RootNode {
 
 type BaseNode = ElementNode | RootNode  
 
-export default function BaseElementNode({ name, height, output, tags, id, data, children }: PropsWithChildren<BaseNode>) {
+export class ElementData {
+    element: ElementObject;
+
+    constructor(tag: keyof HTMLElementTagNameMap) {
+        this.element = {
+            tag: tag,
+            children: [],
+            renderOrder: 0,
+            styling: []
+        }
+    }
+}
+
+export default function ElementBase({ name, height, output, tags, id, data, children }: PropsWithChildren<BaseNode>) {
     const { updateNodeData } = useReactFlow();
     const [tag, setTag] = useState(tags[0].value);
     const [renderOrder, setRenderOrder] = useState("0")
