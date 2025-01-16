@@ -109,12 +109,13 @@ function Flow() {
           <FlowProvider setHtml={setHtml}/>
         </ReactFlowProvider>
       </div>
-      <div>
+      <div className='side-bar'>
         <iframe
           title='window'
+          className='website-display w-[30vw]'
           srcDoc={srcDoc}
         />
-        <pre>
+        <pre className='side-window'>
           <code>
             {html}     
           </code>
@@ -206,7 +207,7 @@ function FlowProvider({setHtml}: {setHtml: React.Dispatch<React.SetStateAction<s
         ref={reactFlowRef}
       >
         
-        <Background />
+        <Background bgColor='#1a1b31'/>
         <Controls />
         <DivPanel />
         <RunPanel html={setHtml}/>

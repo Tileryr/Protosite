@@ -49,7 +49,6 @@ export function Port({ type, position, id, label, isConnectable, children }: {
         ? sourceNodeData.possibleParents.includes(incomingNodeType)
         : true
         
-        console.log(incomingNode)
         return sourceHandle === targetHandle && target !== source && validNodeType
     }
 
@@ -61,7 +60,8 @@ export function Port({ type, position, id, label, isConnectable, children }: {
                 id={id}
                 type={type}
                 position={position}
-                style={{ top: handlePos }}
+                className="handle"
+                style={{ top: handlePos}}
                 isConnectable={isConnectable()}
                 isValidConnection={isValidConnection}
             />

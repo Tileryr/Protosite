@@ -8,9 +8,9 @@ export function convertHtml(root: ElementObject ) {
 
 const addChildren = (parentNode: ElementObject, parentElement: HTMLElement) => {
     const children = parentNode.children
-    console.log(parentNode)
     if(children) {
         children.sort((a, b) => b.renderOrder - a.renderOrder)
+        console.log(children)
         children.forEach((child) => {
             const childElement = document.createElement(child.tag)
             child.text ? childElement.innerHTML = child.text : null
