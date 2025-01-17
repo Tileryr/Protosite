@@ -72,19 +72,34 @@ i {
   font-style: normal;
 }
 
+.side-bar {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex: 1;
+}
+
+.website-container {
+  display: flex;
+}
+
+.website-display {
+  flex: 1;
+  margin: 0;
+  padding: 0;
+}
+
 .side-window {
+  flex: 1;
   flex-direction: column;
   background-color: var(--main-bg-color);
 }
-
 
 body {
   margin: 0;
   display: flex;
   justify-content: stretch;
   place-items: center;
-  /* min-width: 320px;
-  min-height: 100vh; */
 }
 
 h1 {

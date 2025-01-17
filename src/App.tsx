@@ -35,6 +35,7 @@ import StylingNode from './nodes/StylingNode';
 import NodeMenu from './components/NodeMenu';
 import { randomID } from './utilities';
 import ListNode, { ListItemNode } from './nodes/List';
+import GridResizer from './components/GridResizer';
 
 
 const initialNodes: Node[] = [
@@ -94,6 +95,7 @@ export type allNodeTypes = 'html' | 'section' |'paragraph' | 'text' | 'styling' 
 function Flow() {
   const [html, setHtml] = useState<string>('')
 
+  const iframeRef = useRef(null)
   const srcDoc: string = `
   <html>
     <body>
@@ -103,23 +105,30 @@ function Flow() {
   `
 
   return (
-    <div className='flex'>
-      <div className='h-screen w-[70vw]'>
+    <div className='flex w-screen h-screen'>
+      <div className='h-screen w-[70%]'>
         <ReactFlowProvider>
           <FlowProvider setHtml={setHtml}/>
         </ReactFlowProvider>
       </div>
-      <div className='side-bar'>
-        <iframe
-          title='window'
-          className='website-display w-[30vw]'
-          srcDoc={srcDoc}
-        />
-        <pre className='side-window'>
-          <code>
-            {html}     
-          </code>
-        </pre>
+      <GridResizer direction='horizontal' windowRef={iframeRef}/>
+      <div className='side-bar h-screen w-[30%]'>
+        <div className='website-container select-none -webkit-select-none'>
+          <iframe
+            title='window'
+            className='website-display select-none -webkit-select-none'
+            srcDoc={srcDoc}
+            ref={iframeRef}
+          />
+        </div>
+        <GridResizer direction='vertical' windowRef={iframeRef}/>
+        <div className='side-window'>
+          <pre>
+            <code>
+              {html}     
+            </code>
+          </pre>
+        </div>
       </div>
     </div>
   );
