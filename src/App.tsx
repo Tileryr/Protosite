@@ -1,4 +1,9 @@
 import { useState, useCallback, useRef } from 'react';
+
+import hljs from 'highlight.js/lib/core';
+import xml from 'highlight.js/lib/languages/xml';
+import { prettify } from 'htmlfy'
+
 import {
   ReactFlow,
   Controls,
@@ -36,6 +41,7 @@ import NodeMenu from './components/NodeMenu';
 import { randomID } from './utilities';
 import ListNode, { ListItemNode } from './nodes/List';
 import GridResizer from './components/GridResizer';
+
 
 
 const initialNodes: Node[] = [
@@ -92,6 +98,8 @@ const nodeTypes: NodeTypes = {
 
 export type allNodeTypes = 'html' | 'section' |'paragraph' | 'text' | 'styling' | 'list' | 'list-item'
 
+hljs.registerLanguage('xml', xml)
+
 function Flow() {
   const [html, setHtml] = useState<string>('')
 
@@ -103,17 +111,20 @@ function Flow() {
     </body>
   </html>
   `
-
+  
+  const highlightedText = hljs.highlight(prettify(html), { language: "xml" }).value
+  console.log(html)
+  console.log(highlightedText)
   return (
     <div className='flex w-screen h-screen'>
-      <div className='h-screen w-[70%]'>
+      <div className='h-screen w-[70%] border-highlight border-2 rounded-xl'>
         <ReactFlowProvider>
           <FlowProvider setHtml={setHtml}/>
         </ReactFlowProvider>
       </div>
       <GridResizer direction='horizontal' windowRef={iframeRef}/>
-      <div className='side-bar h-screen w-[30%]'>
-        <div className='website-container select-none -webkit-select-none'>
+      <div className='side-bar h-screen w-[30%] '>
+        <div className='website-container select-none -webkit-select-none border-highlight border-2 rounded-xl'>
           <iframe
             title='window'
             className='website-display select-none -webkit-select-none'
@@ -122,10 +133,9 @@ function Flow() {
           />
         </div>
         <GridResizer direction='vertical' windowRef={iframeRef}/>
-        <div className='side-window'>
+        <div className='side-window border-highlight border-2 rounded-xl'>
           <pre>
-            <code>
-              {html}     
+            <code dangerouslySetInnerHTML={{__html: highlightedText}}>
             </code>
           </pre>
         </div>
@@ -165,7 +175,6 @@ function FlowProvider({setHtml}: {setHtml: React.Dispatch<React.SetStateAction<s
     return { nodes: filteredNodes, edges } 
   };
   
-
   const onContextMenu = (event: React.MouseEvent<HTMLDivElement>) => {
     event.preventDefault();
     setContextMenuToggled(true);

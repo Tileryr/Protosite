@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+  box-sizing: border-box;
+}
+
 :root {
   --main-bg-color: #1a1b31;
   --midtone: #2a2c65;
@@ -14,13 +18,20 @@
 
   color-scheme: light dark;
   color: var(--sub-white);
-  background-color: #242424;
   
   font-size: 16px;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  justify-content: stretch;
+  place-items: center;
+  background-color: var(--main-bg-color);
 }
 
 .shell {
@@ -81,6 +92,7 @@ i {
 
 .website-container {
   display: flex;
+  background-color: #ffffff;
 }
 
 .website-display {
@@ -93,13 +105,6 @@ i {
   flex: 1;
   flex-direction: column;
   background-color: var(--main-bg-color);
-}
-
-body {
-  margin: 0;
-  display: flex;
-  justify-content: stretch;
-  place-items: center;
 }
 
 h1 {
@@ -118,4 +123,119 @@ h1 {
   button {
     background-color: #f9f9f9;
   }
+}
+
+/*!
+  Theme: Rose Pine
+  Origin: https://rosepinetheme.com/
+*/
+code {
+  color: var(--sub-white);
+}
+/*  Comment */
+.hljs-meta,
+.hljs-comment {
+  color: #6e6a86;
+}
+
+/* Red */
+/*INFO: This keyword, HTML elements, Regex group symbol, CSS units, Terminal Red */
+.hljs-tag,
+.hljs-doctag,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-template-tag,
+.hljs-selector-pseudo,
+.hljs-selector-attr,
+.hljs-variable.language_,
+.hljs-deletion {
+  color: #eb6f92;
+}
+
+/*Orange */
+/*INFO: Number and Boolean constants, Language support constants */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-number,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-link {
+  color: #ea9a97;
+}
+
+
+/*  Yellow */
+/* INFO:  	Function parameters, Regex character sets, Terminal Yellow */
+.hljs-built_in,
+.hljs-attribute {
+  color: #f6c177;
+}
+/* cyan */
+/* INFO: Language support functions, CSS HTML elements */
+.hljs-selector-tag {
+  color: #3e8fb0;
+}
+
+/* light blue */
+/* INFO: Object properties, Regex quantifiers and flags, Markdown headings, Terminal Cyan, Markdown code, Import/export keywords */
+.hljs-keyword,
+  .hljs-title.function_,
+.hljs-title,
+.hljs-title.class_,
+.hljs-title.class_.inherited__,
+.hljs-subst,
+.hljs-property {color: #9ccfd8;}
+
+/*Green*/
+/* INFO: Object literal keys, Markdown links, Terminal Green */
+.hljs-selector-tag { color: #9ccfd8;}
+
+
+/*Green(er) */
+/* INFO: Strings, CSS class names */
+.hljs-quote,
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+  color: #3e8fb0;
+}
+
+/* INFO:  	Function names, CSS property names, Terminal Blue */
+.hljs-code,
+.hljs-formula,
+.hljs-section {
+  color: #ea9a97;
+}
+
+
+
+/* Magenta */
+/*INFO: Control Keywords, Storage Types, Regex symbols and operators, HTML Attributes, Terminal Magenta */
+.hljs-name,
+.hljs-keyword,
+.hljs-operator,
+.hljs-keyword,
+.hljs-char.escape_,
+.hljs-attr {
+  color: #c4a7e7;
+}
+
+/* white*/
+/* INFO: Variables, Class names, Terminal White */
+.hljs-punctuation {color: #e0def4}
+
+.hljs {
+  background: #232136;
+  color: #6e6a86;
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-strong {
+  font-weight: bold;
 }

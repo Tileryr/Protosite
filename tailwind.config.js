@@ -9,6 +9,11 @@ export default {
       borderWidth: {
         '1': '1px',
       },
+
+      colors: {
+        highlight: "#564cbd",
+        background: "#1a1b31",
+      }
     },
   },
   plugins: [],

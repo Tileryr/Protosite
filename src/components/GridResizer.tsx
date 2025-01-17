@@ -7,7 +7,7 @@ export default function GridResizer({ direction, windowRef }: {
     const documentRef = useRef(window.document)
     const selfRef = useRef<HTMLDivElement>(null)
 
-    const style = direction === 'horizontal' ? 'w-4 cursor-col-resize' : 'h-4 cursor-row-resize'
+    const style = direction === 'horizontal' ? 'w-2 cursor-col-resize' : 'h-2 cursor-row-resize'
     const resizeWindow = () => {
         const previousElement = selfRef.current?.previousElementSibling
         const nextElement = selfRef.current?.nextElementSibling
@@ -20,7 +20,7 @@ export default function GridResizer({ direction, windowRef }: {
             throw new Error('Siblings must be containers')
         }
 
-        const endResize = (event: Event) => {
+        const endResize = () => {
             documentRef.current.removeEventListener('pointerup', endResize)
             documentRef.current.removeEventListener('pointermove', resizeAxis)
             if(windowRef?.current) {
@@ -50,6 +50,6 @@ export default function GridResizer({ direction, windowRef }: {
         }
     }
     return (
-        <div ref={selfRef} className={style} onPointerDown={resizeWindow}></div>
+        <div ref={selfRef} className={`${style} bg-background`} onPointerDown={resizeWindow}></div>
     )
 }
