@@ -16,8 +16,8 @@ export default function AddNodeButton({ nodeData, nodeType, connectionType, limi
     const [disabled, setDisabled] = useState(false)
     const id = useNodeId()!
 
-    const checkLimit = (connections: Connection[]) => {
-        limit && connections.length > 0 ? setDisabled(true) : setDisabled(false)
+    const checkLimit = () => {
+        limit && connectedNodes.length > 0 ? setDisabled(true) : setDisabled(false)
     }
 
     const connectedNodes = useNodeConnections({ 
@@ -27,15 +27,15 @@ export default function AddNodeButton({ nodeData, nodeType, connectionType, limi
         onDisconnect: checkLimit
     })
 
+    
     const addItem = () => {
         const newItem: NewNode = new NewNode(nodeData, nodeType, position, parentId)
-
         addNodes(newItem as Node)
         addEdges({id: randomID(), source: newItem.id, target: id, sourceHandle: connectionType, targetHandle: connectionType })
     }
     return (
         <button className="rounded-full h-4 aspect-square flex justify-center items-center mr-1
-        bg-dry-purple-500 hover:bg-dry-purple-400 active:bg-dry-purple-300 active:text-dark-purple-900"
+        bg-dry-purple-500 hover:bg-dry-purple-400 active:bg-dry-purple-300 active:text-dark-purple-900 disabled:bg-dry-purple-950 disabled:text-dry-purple-800"
         onClick={addItem} disabled={disabled}>
             <span>+</span>
         </button>
