@@ -1,31 +1,30 @@
 import ContextMenu, { ContextMenuOption } from "./ContextMenu";
 
-import { allNodeTypes } from "../App";
-import { Node, NodeProps } from "@xyflow/react";
+import { AllNodeTypes } from "../nodeutils";
 import { ElementData } from "./Nodes/ElementBase";
 
 export default function NodeMenu({ open, position, addNode }: { 
     open: boolean, 
     position: { x: number, y: number }
-    addNode(nodeType: allNodeTypes, nodeData: Record<string, unknown>): void
+    addNode(nodeType: AllNodeTypes, nodeData: Record<string, unknown>): void
 }) {
     
     const options: ContextMenuOption[] = [
         {
             label: "HTML",
-            onClick: () => addNode("html", new ElementData('body') as {}),
+            onClick: () => addNode("html", new ElementData({tag: 'body'}) as {}),
             innerMenuOptions: [{
                 label: "Section",
-                onClick: () => addNode("section", new ElementData('div') as {}),
+                onClick: () => addNode("section", new ElementData({tag: 'div'}) as {}),
             },{
                 label: "Text",
                 onClick: () => addNode("text", {text: ''}),
             },{
                 label: "Paragraph",
-                onClick: () => addNode("paragraph", new ElementData('p') as {}),
+                onClick: () => addNode("paragraph", new ElementData({tag: 'p'}) as {}),
             },{
                 label: "List",
-                onClick: () => addNode("list", new ElementData('ul') as {}),
+                onClick: () => addNode("list", new ElementData({tag: 'ul', possibleChildren: 'list-item'}) as {}),
             }
             ]
         },

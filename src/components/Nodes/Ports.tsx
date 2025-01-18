@@ -1,27 +1,30 @@
-import React, { useRef, useEffect, Children, useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import {
     Handle, 
     Position,
-    useHandleConnections, 
     useNodesData,
     useNodeId,
     useReactFlow,
     useUpdateNodeInternals,
     IsValidConnection,
-    Node,
+    useNodeConnections,
+    Connection,
+    Node
 } from "@xyflow/react";
 
 import { HTMLNode } from "../../nodes/HtmlNode";
-import { AnyNodeData, DataType, ElementObject } from "../types";
+import { DataType, ElementObject } from "../../types";
 import { updateElement } from "../../utilities";
-import { allNodeTypes } from "../../App";
+import { AllNodeTypes, AnyNodeData } from "../../nodeutils";
 
-export function Port({ type, position, id, label, isConnectable, children }: {
+export function Port({ type, position, id, label, limit, connections, children }: {
     type: 'source' | 'target'
     position: Position
     id: string
     label: string
-    isConnectable: () => boolean
+    limit: boolean
+    connections: Connection[]
+    isConnectable?: () => boolean
     children?: React.ReactElement
 }) {
     const { getNode } = useReactFlow()
@@ -29,7 +32,7 @@ export function Port({ type, position, id, label, isConnectable, children }: {
 
     const ref = useRef<HTMLDivElement>(null);
     const nodeId = useNodeId()!;
-    const nodeData: AnyNodeData = useNodesData(nodeId)!.data as AnyNodeData;
+    const currentNode: Pick<Node, "type" | "id" | "data"> = useNodesData(nodeId)!;
 
     let [handlePos, setHandlePos] = useState(12)
 
@@ -39,49 +42,66 @@ export function Port({ type, position, id, label, isConnectable, children }: {
     const isValidConnection: IsValidConnection = ({sourceHandle, targetHandle, source, target}) => {
         const isSource = type === 'source'
         const incomingNode = getNode(isSource ? target : source)!
-        const incomingNodeData: AnyNodeData = incomingNode.data as AnyNodeData
-        const incomingNodeType = incomingNode.type! as allNodeTypes
 
-        const sourceNodeData = isSource ? nodeData : incomingNodeData
-        const targetNodeData = isSource ? incomingNodeData : nodeData
+        const sourceNode = isSource ? currentNode : incomingNode
+        const targetNode = isSource ? incomingNode : currentNode
 
-        const validNodeType = 'possibleParents' in sourceNodeData && sourceNodeData.possibleParents
-        ? sourceNodeData.possibleParents.includes(incomingNodeType)
+        const sourceNodeData: AnyNodeData = sourceNode.data as AnyNodeData
+        const targetNodeData: AnyNodeData = targetNode.data as AnyNodeData
+
+        const validParent = 'possibleParents' in sourceNodeData && sourceNodeData.possibleParents
+        ? sourceNodeData.possibleParents.includes(targetNode.type as AllNodeTypes)
         : true
         
-        return sourceHandle === targetHandle && target !== source && validNodeType
+        const validChild = 'possibleChildren' in targetNodeData && targetNodeData.possibleChildren
+        ? targetNodeData.possibleChildren.includes(sourceNode.type as AllNodeTypes)
+        : true
+
+        return sourceHandle === targetHandle && target !== source && validChild && validParent 
+    }
+
+    const isConnectable = () => {
+        return limit ? connections.length < 1 : true
     }
 
     return (
-        <div ref={ref} className={position === Position.Left ? 'justify-self-start' : 'justify-self-end' }>
-            <label onClick={() => console.log(nodeData)}>{label}</label>
-            {children}
+        <div ref={ref} className={position === Position.Left ? 'justify-self-start flex items-center' : 'justify-self-end flex items-center' }>
+            {type === 'target' && children}
+            <label>{label}</label>
+            {type === 'source' && children}
             <Handle 
                 id={id}
                 type={type}
                 position={position}
                 className="handle"
                 style={{ top: handlePos}}
-                isConnectable={isConnectable()}
                 isValidConnection={isValidConnection}
+                isConnectable={isConnectable()}
             />
         </div>
     )
 }
 
-
-export function Output({ id, label, children }: {
+export function Output({ id, label, limit, children }: {
     id: DataType // data property that is outputted
+    limit: boolean
     label?: string
     children?: React.ReactElement
 }) {
+    const connections = useNodeConnections({
+        handleType: 'source',
+        handleId: id,
+    })
+
     return (
         <Port
             id={id}
             label={label ? label : ''}
+            limit={limit}
             type='source' 
             position={Position.Left}
             isConnectable={() => true}
+            connections={connections}
         >   
             {children}
         </Port>
@@ -89,42 +109,42 @@ export function Output({ id, label, children }: {
     
 }
 
-export function Input(props: {
+export function Input({id, label, limit, property, children}: {
     id: DataType
     label: string
-    limit?: boolean
+    limit: boolean
     property: keyof ElementObject
+    children?: React.ReactElement
 }) {
     //do later: group stylings into big object
 
     const { updateNodeData } = useReactFlow(); 
     const nodeId = useNodeId()!;
     const nodeData = useNodesData<HTMLNode>(nodeId)!
-    const connections = useHandleConnections({
-        type: 'target',
-        id: props.id
+    const connections = useNodeConnections({
+        handleType: 'target',
+        handleId: id,
     })
 
     const connectedIds = connections.map(connection => connection.source)
     const connectedNodes = useNodesData(connectedIds)
-    const connectedOutputs = connectedNodes.map(connectedNode => connectedNode.data[props.id])
-
-    const isConnectable = () => {
-        return props.limit ? connections.length < 1 : true
-    }
+    const connectedOutputs = connectedNodes.map(connectedNode => connectedNode.data[id])
     
     useEffect(() => {
-        const addedProperty = props.limit ? connectedOutputs[0] : connectedOutputs
-        updateNodeData(nodeId, { element: updateElement(nodeData.data, props.property, addedProperty) })
+        const addedProperty = limit ? connectedOutputs[0] : connectedOutputs
+        updateNodeData(nodeId, { element: updateElement(nodeData.data, property, addedProperty) })
     }, [JSON.stringify(connectedOutputs)]) 
 
     return (
         <Port
-            {...props}
+            id={id}
+            label={label}
+            limit={limit}
             type='target' 
             position={Position.Right}
-            isConnectable={isConnectable}
+            connections={connections}
         >
+            {children}
         </Port>
     )
     

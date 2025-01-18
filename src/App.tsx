@@ -19,10 +19,7 @@ import {
   type OnEdgesChange,
   type NodeTypes,
   type OnBeforeDelete,
-  type IsValidConnection,
   useReactFlow,
-  NodeProps,
-  useNodesData,
 } from '@xyflow/react';
 
 import '@xyflow/react/dist/style.css';
@@ -39,10 +36,9 @@ import StylingNode from './nodes/StylingNode';
 
 import NodeMenu from './components/NodeMenu';
 import { randomID } from './utilities';
-import ListNode, { ListItemNode } from './nodes/List';
+import ListNode, { ListItemNode } from './nodes/ListNode';
 import GridResizer from './components/GridResizer';
-
-
+import { AllNodeTypes } from './nodeutils';
 
 const initialNodes: Node[] = [
   {
@@ -95,8 +91,6 @@ const nodeTypes: NodeTypes = {
   'list': ListNode,
   'list-item': ListItemNode,
 };
-
-export type allNodeTypes = 'html' | 'section' |'paragraph' | 'text' | 'styling' | 'list' | 'list-item'
 
 hljs.registerLanguage('xml', xml)
 
@@ -182,12 +176,13 @@ function FlowProvider({setHtml}: {setHtml: React.Dispatch<React.SetStateAction<s
     console.log("BLABBER")
   }
   
-  const addNode = (positionX: number, positionY: number, type: allNodeTypes, data: Record<string, unknown>) => {
+  const addNode = (positionX: number, positionY: number, type: AllNodeTypes, data: Record<string, unknown>) => {
     const adjustedPos = screenToFlowPosition({
         x: positionX,
         y: positionY
     })
 
+    console.log(data)
     const node: Node = {
       id: randomID(),
       data: data,
@@ -203,7 +198,7 @@ function FlowProvider({setHtml}: {setHtml: React.Dispatch<React.SetStateAction<s
       <NodeMenu 
           position={contextMenuPosition}
           open={contextMenuToggled}
-          addNode={(type: allNodeTypes, data: Record<string, unknown>) => {
+          addNode={(type: AllNodeTypes, data: Record<string, unknown>) => {
             let currentFlow = reactFlowRef.current
             let width = currentFlow ? currentFlow.offsetWidth : 0
             let height = currentFlow ? currentFlow.offsetHeight : 0

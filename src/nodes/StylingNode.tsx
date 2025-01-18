@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import OutputNode from "../components/Nodes/BaseOutputNode";
-import InputField from "../components/InputField";
+import InputField from "../components/Inputs/InputField";
 import { Node, NodeProps, useReactFlow } from "@xyflow/react";
-import { StylingObject } from "../components/types";
+import { StylingObject } from "../types";
 
 type StyleNodeData = {
     styling: StylingObject

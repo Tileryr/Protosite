@@ -1,11 +1,16 @@
-import { PropsWithChildren, useCallback, useState } from "react";
+import { PropsWithChildren, useState } from "react";
 import { Input, Output } from "./Ports";
-import { DataType, ElementNodeData, ElementObject } from "../types";
-import SelectField from "../SelectField";
+import { DataType, ElementObject } from "../../types";
+import SelectField from "../Inputs/SelectField";
 import { useReactFlow } from "@xyflow/react";
 import { updateElement } from "../../utilities";
 import NodeShell from "./NodeShell";
+import { AllNodeTypes } from "../../nodeutils";
 
+export type ElementNodeData = {
+    element: ElementObject
+    possibleParents?: AllNodeTypes | AllNodeTypes[]
+}
 
 export interface ElementTag {
     name: string
@@ -22,32 +27,28 @@ interface ElementNode {
     height?: number
 }
 
-interface RootNode {
-    name: string
-    output: false
-    tags: ElementTag[]
-    type?: DataType
-    id: string
-    data: ElementNodeData
-    height?: number
-} 
-
-type BaseNode = ElementNode | RootNode  
-
 export class ElementData {
     element: ElementObject;
+    possibleParents?: AllNodeTypes | AllNodeTypes[]
+    possibleChildren?: AllNodeTypes | AllNodeTypes[]
 
-    constructor(tag: keyof HTMLElementTagNameMap) {
+    constructor({ tag, possibleParents, possibleChildren }: {
+        tag: keyof HTMLElementTagNameMap, 
+        possibleParents?: AllNodeTypes | AllNodeTypes[], 
+        possibleChildren?: AllNodeTypes | AllNodeTypes[]
+    }) {
         this.element = {
             tag: tag,
             children: [],
             renderOrder: 0,
             styling: []
         }
+        this.possibleParents = possibleParents
+        this.possibleChildren = possibleChildren
     }
 }
 
-export default function ElementBase({ name, height, output, tags, id, data, children }: PropsWithChildren<BaseNode>) {
+export default function ElementBase({ name, height, output, tags, id, data, children }: PropsWithChildren<ElementNode>) {
     const { updateNodeData } = useReactFlow();
     const [tag, setTag] = useState(tags[0].value);
     const [renderOrder, setRenderOrder] = useState("0")
@@ -90,7 +91,7 @@ export default function ElementBase({ name, height, output, tags, id, data, chil
     if (output) {
         if(tags.length > 1) {
             header = (
-                <Output id={"element"}> 
+                <Output id={"element"} limit={false}> 
                     <SelectField<keyof HTMLElementTagNameMap> 
                     options={tags} 
                     onChange={onTagChange} 
@@ -100,7 +101,7 @@ export default function ElementBase({ name, height, output, tags, id, data, chil
             )
         } else {
             header = (
-                <Output id={"element"} label={name} /> 
+                <Output id={"element"} label={name} limit={false}/> 
             )
         }
     }

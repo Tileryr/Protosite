@@ -1,4 +1,4 @@
-import { randomID } from "../utilities"
+import { randomID } from "../../utilities"
 
 interface SelectOption<valueType extends string> {
     name: string
