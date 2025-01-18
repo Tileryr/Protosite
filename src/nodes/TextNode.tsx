@@ -42,6 +42,7 @@ export default function TextNode({ id }: NodeProps<TextNode>) {
         'italicize': {sections: italicizedText, tag: 'em'}
     }
 
+
     const onChange = (event: FormEvent<HTMLDivElement>) => {
         const newText = event.currentTarget.textContent ?? ''
 
@@ -258,16 +259,21 @@ export default function TextNode({ id }: NodeProps<TextNode>) {
 
     useEffect(() => updateNodeData(id, { string: htmlText}), [htmlText])
 
+    useEffect(() => {
+        setTimeout(() => {
+            textFieldRef.current?.focus();
+        }, 10);
+    }, [textFieldRef]);
     return (
-        <OutputNode name="Text" height={200} type='string'>
+        <OutputNode name="Text" type='string'>
             <div>
                 <button 
                 style={{background: boldActived ? 'blue' : 'rgb(255, 255, 255)'}} 
                 onClick={() => setBoldActivated(prev => !prev)} 
-                className='w-8'>B</button>
+                className='w-8 aspect-square'>B</button>
                 <button
                 style={{background: italicizedActived ? 'blue' : 'rgb(255, 255, 255)'}}  
-                className='hover:bg-gray-300 w-8' 
+                className='w-8 aspect-square' 
                 onClick={() => setItalicizedActivated(prev => !prev)}>I</button>
             </div>
             

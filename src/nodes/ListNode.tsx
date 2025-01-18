@@ -17,13 +17,14 @@ export default function ListNode({ id, data, }: NodeProps<ListNode>) {
     const heightOffset: number = getInternalNode(id)!.measured!.height ? getInternalNode(id)!.measured.height! : 0
     
     useEffect(() => {
-        itemConnections.forEach((itemID, index, array) => {
+        let childrenItemIDs = itemConnections.filter((itemID) => getInternalNode(itemID)?.parentId === id)
+        childrenItemIDs.forEach((itemID, index, array) => {
             updateNode(itemID, { position: {
                 x: 275,
                 y: (index * listSpread - ((array.length * listSpread) / 2)) + heightOffset / 2
             }})
         })
-    })
+    }, [itemConnections.length])
     
     const tags: ElementTag[] = [
         {name: 'Unordered List', value: 'ul'},
@@ -46,12 +47,12 @@ export default function ListNode({ id, data, }: NodeProps<ListNode>) {
 
 type ListItemNode = Node<ElementNodeData, 'list'>
 
-export const ListItemNode = memo(function ListItemNode({ id, data }: NodeProps<ListItemNode>) {
-    const { deleteElements } = useReactFlow()
-
-    const parents = useNodeConnections({handleType: 'source', handleId: 'element'})
-
-    if(parents.length !== 1) {
+export const ListItemNode = memo(function ListItemNode({ id, data, positionAbsoluteX, positionAbsoluteY }: NodeProps<ListItemNode>) {
+    const { deleteElements, updateNode } = useReactFlow()
+    
+    const parentList = useNodeConnections({handleType: 'source', handleId: 'element'})
+    
+    if(!parentList.length) {
         deleteElements({ nodes: [{ id: id }] })
     }
 
@@ -59,18 +60,26 @@ export const ListItemNode = memo(function ListItemNode({ id, data }: NodeProps<L
         {name: 'List Element', value: 'li'}
     ]
 
+    const deparentNode = () => {
+        updateNode(id, { 
+            parentId: undefined, 
+            position: {x: positionAbsoluteX, y: positionAbsoluteY}
+        })
+    }
 
     return (
-        <ElementBase name="List Element" output={true} type='element' tags={tags} id={id} data={data}>
-            <Input
-                id='string'
-                label='Text'
-                limit={true}
-                property='text'
-            >
-                <AddNodeButton limit={true} nodeData={{text: ''}} nodeType='text' connectionType="string" position={{x: 300, y: 0}}/>
-            </Input>
-        </ElementBase>
+        <div onPointerDown={deparentNode}>
+            <ElementBase name="List Element" output={true} type='element' tags={tags} id={id} data={data}>
+                <Input
+                    id='string'
+                    label='Text'
+                    limit={true}
+                    property='text'
+                >
+                    <AddNodeButton limit={true} nodeData={{text: ''}} nodeType='text' connectionType="string" position={{x: 300, y: 0}}/>
+                </Input>
+            </ElementBase>
+        </div>
     )
 })
   
