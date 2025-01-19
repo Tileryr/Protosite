@@ -2,7 +2,7 @@ import { Node, NodeProps, useNodeConnections, useReactFlow } from "@xyflow/react
 import { ElementNodeData } from "../components/Nodes/ElementBase";
 import ElementBase, { ElementData, ElementTag } from "../components/Nodes/ElementBase";
 import { Input } from "../components/Nodes/Ports";
-import { memo, useEffect } from "react";
+import { useEffect } from "react";
 import AddNodeButton from "../components/Inputs/AddNodeButton";
 
 type ListElementData = ElementNodeData & { list_elements: Node[] }
@@ -32,14 +32,21 @@ export default function ListNode({ id, data, }: NodeProps<ListNode>) {
     ]
     
     return (
-        <ElementBase name="List" output={true} type='element' tags={tags} id={id} data={data}>
+        <ElementBase output={true} tags={tags} id={id} data={data}>
             <Input
                 id='element'
                 label='Items'
                 limit={false}
                 property='children'
             >   
-                <AddNodeButton limit={false} nodeData={new ElementData({ tag: 'li', possibleParents: 'list', })} nodeType='list-item' connectionType="element" position={{x: 300, y: 0}} parentId={id}/>
+                <AddNodeButton 
+                    limit={false} 
+                    nodeData={new ElementData({ tag: 'li', possibleParents: 'list', })} 
+                    nodeType='list-item' 
+                    connectionType="element" 
+                    position={{x: 300, y: 0}} 
+                    parentId={id}
+                />
             </Input>
         </ElementBase>
     )
@@ -47,7 +54,7 @@ export default function ListNode({ id, data, }: NodeProps<ListNode>) {
 
 type ListItemNode = Node<ElementNodeData, 'list'>
 
-export const ListItemNode = memo(function ListItemNode({ id, data, positionAbsoluteX, positionAbsoluteY }: NodeProps<ListItemNode>) {
+export function ListItemNode({ id, data, positionAbsoluteX, positionAbsoluteY }: NodeProps<ListItemNode>) {
     const { deleteElements, updateNode } = useReactFlow()
     
     const parentList = useNodeConnections({handleType: 'source', handleId: 'element'})
@@ -69,18 +76,19 @@ export const ListItemNode = memo(function ListItemNode({ id, data, positionAbsol
 
     return (
         <div onPointerDown={deparentNode}>
-            <ElementBase name="List Element" output={true} type='element' tags={tags} id={id} data={data}>
+            <ElementBase output={true} tags={tags} id={id} data={data}>
                 <Input
                     id='string'
                     label='Text'
                     limit={true}
                     property='text'
                 >
-                    <AddNodeButton limit={true} nodeData={{text: ''}} nodeType='text' connectionType="string" position={{x: 300, y: 0}}/>
+                    <AddNodeButton limit={true} nodeData={{text: ''}} nodeType='text' connectionType="string"
+                    position={{x: positionAbsoluteX + 300, y: positionAbsoluteY}}/>
                 </Input>
             </ElementBase>
         </div>
     )
-})
+}
   
 

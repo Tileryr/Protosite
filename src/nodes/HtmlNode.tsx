@@ -1,12 +1,8 @@
 import { Input } from '../components/Nodes/Ports'
-
-import ElementBase, { ElementTag } from '../components/Nodes/ElementBase'
-import { ElementNodeData } from '../components/types'
-
+import ElementBase, { ElementNodeData, ElementTag } from '../components/Nodes/ElementBase'
 import type { Node, NodeProps } from '@xyflow/react'
 
-type HTMLElementData = ElementNodeData & { children: Node[] }
-export type HTMLNode = Node<HTMLElementData>
+type HTMLNode = Node<ElementNodeData, 'html'>
 
 export default function HtmlNode({ id, data }: NodeProps<HTMLNode>) {
     const tags: ElementTag[] = [
@@ -14,7 +10,7 @@ export default function HtmlNode({ id, data }: NodeProps<HTMLNode>) {
     ]
     
     return (
-        <ElementBase name="HTML" output={false} tags={tags} id={id} data={data}>
+        <ElementBase tags={tags} id={id} data={data} output={false}>
             <Input
                 id='element'
                 label='Children'

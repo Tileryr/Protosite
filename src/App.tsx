@@ -39,6 +39,7 @@ import { randomID } from './utilities';
 import ListNode, { ListItemNode } from './nodes/ListNode';
 import GridResizer from './components/GridResizer';
 import { AllNodeTypes } from './nodeutils';
+import TableNode, { TableDataNode, TableRowNode } from './nodes/TableNode';
 
 const initialNodes: Node[] = [
   {
@@ -90,6 +91,9 @@ const nodeTypes: NodeTypes = {
   'styling': StylingNode,
   'list': ListNode,
   'list-item': ListItemNode,
+  'table': TableNode,
+  'table-row': TableRowNode,
+  'table-data': TableDataNode
 };
 
 hljs.registerLanguage('xml', xml)

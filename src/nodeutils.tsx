@@ -1,8 +1,9 @@
-import { XYPosition } from "@xyflow/react"
+import { Node, NodeProps, XYPosition } from "@xyflow/react"
 import { randomID } from "./utilities"
-import { ElementData } from "./components/Nodes/ElementBase"
+import { ElementData, ElementNodeData } from "./components/Nodes/ElementBase"
 
-export type AllNodeTypes = 'html' | 'section' |'paragraph' | 'text' | 'styling' | 'list' | 'list-item'
+export type AllNodeTypes = 
+  'html' | 'section' |'paragraph' | 'text' | 'styling' | 'list' | 'list-item' | 'table' | 'table-row' | 'table-data'
 
 export type AnyNodeData = ElementData | { text: '' } | { styling: '' }
 
@@ -19,3 +20,5 @@ export class NewNode {
         this.position = position ?? this.position
     }
 }
+
+export type ElementNodeProps<NodeType extends string> = NodeProps<Node<ElementNodeData, NodeType>>

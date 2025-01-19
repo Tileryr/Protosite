@@ -1,4 +1,4 @@
-import { ElementNodeData } from "./types";
+import { ElementNodeData } from "./components/Nodes/ElementBase";
 
 export function randomID() {
     return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c =>

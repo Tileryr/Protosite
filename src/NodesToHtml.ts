@@ -1,4 +1,4 @@
-import { ElementObject } from "./components/types"
+import { ElementObject } from "./types"
 
 export function convertHtml(root: ElementObject ) {
     const body = document.createElement('div')

@@ -12,15 +12,17 @@ import {
     Node
 } from "@xyflow/react";
 
-import { HTMLNode } from "../../nodes/HtmlNode";
 import { DataType, ElementObject } from "../../types";
-import { updateElement } from "../../utilities";
+import { randomID, updateElement } from "../../utilities";
 import { AllNodeTypes, AnyNodeData } from "../../nodeutils";
+import { ElementNodeData } from "./ElementBase";
+
+type PortID = `${DataType}-${string}`
 
 export function Port({ type, position, id, label, limit, connections, children }: {
     type: 'source' | 'target'
     position: Position
-    id: string
+    id: PortID
     label: string
     limit: boolean
     connections: Connection[]
@@ -43,6 +45,9 @@ export function Port({ type, position, id, label, limit, connections, children }
         const isSource = type === 'source'
         const incomingNode = getNode(isSource ? target : source)!
 
+        const sourceType = sourceHandle?.split('-', 1)[0]
+        const targetType = targetHandle?.split('-', 1)[0]
+
         const sourceNode = isSource ? currentNode : incomingNode
         const targetNode = isSource ? incomingNode : currentNode
 
@@ -57,7 +62,7 @@ export function Port({ type, position, id, label, limit, connections, children }
         ? targetNodeData.possibleChildren.includes(sourceNode.type as AllNodeTypes)
         : true
 
-        return sourceHandle === targetHandle && target !== source && validChild && validParent 
+        return sourceType === targetType && target !== source && validChild && validParent 
     }
 
     const isConnectable = () => {
@@ -88,6 +93,8 @@ export function Output({ id, label, limit, children }: {
     label?: string
     children?: React.ReactElement
 }) {
+    const [portID] = useState<PortID>(`${id}-${randomID()}`)
+
     const connections = useNodeConnections({
         handleType: 'source',
         handleId: id,
@@ -95,7 +102,7 @@ export function Output({ id, label, limit, children }: {
 
     return (
         <Port
-            id={id}
+            id={portID}
             label={label ? label : ''}
             limit={limit}
             type='source' 
@@ -117,10 +124,11 @@ export function Input({id, label, limit, property, children}: {
     children?: React.ReactElement
 }) {
     //do later: group stylings into big object
-
     const { updateNodeData } = useReactFlow(); 
+    const [portID] = useState<PortID>(`${id}-${randomID()}`)
+
     const nodeId = useNodeId()!;
-    const nodeData = useNodesData<HTMLNode>(nodeId)!
+    const nodeData = useNodesData<Node<ElementNodeData>>(nodeId)!
     const connections = useNodeConnections({
         handleType: 'target',
         handleId: id,
@@ -137,7 +145,7 @@ export function Input({id, label, limit, property, children}: {
 
     return (
         <Port
-            id={id}
+            id={portID}
             label={label}
             limit={limit}
             type='target' 

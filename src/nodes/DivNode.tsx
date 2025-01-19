@@ -1,11 +1,9 @@
 import { Input } from '../components/Nodes/Ports'
 
-import ElementBase, { ElementTag } from '../components/Nodes/ElementBase';
+import ElementBase, { ElementNodeData, ElementTag } from '../components/Nodes/ElementBase';
 import { Node, NodeProps } from '@xyflow/react';
-import { ElementNodeData } from '../components/types';
 
-type SectioningElementData = ElementNodeData
-type DivNode = Node<SectioningElementData, 'div'>
+type DivNode = Node<ElementNodeData, 'div'>
 
 export default function DivNode({ id, data }: NodeProps<DivNode>) {
     const tags: ElementTag[] = [
@@ -14,7 +12,7 @@ export default function DivNode({ id, data }: NodeProps<DivNode>) {
     ]
     
     return (
-    <ElementBase name="Div" output={true} type='element' tags={tags} id={id} data={data}>
+    <ElementBase output={true} tags={tags} id={id} data={data}>
         <Input
             id='element'
             label='Children'

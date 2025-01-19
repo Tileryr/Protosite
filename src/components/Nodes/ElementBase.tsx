@@ -10,6 +10,7 @@ import { AllNodeTypes } from "../../nodeutils";
 export type ElementNodeData = {
     element: ElementObject
     possibleParents?: AllNodeTypes | AllNodeTypes[]
+    possibleChildren?: AllNodeTypes | AllNodeTypes[]
 }
 
 export interface ElementTag {
@@ -18,16 +19,14 @@ export interface ElementTag {
 }
 
 interface ElementNode {
-    name: string
-    output: true
-    type: DataType
+    output: boolean
     tags: ElementTag[]
     id: string
     data: ElementNodeData
     height?: number
 }
 
-export class ElementData {
+export class ElementData implements ElementNodeData {
     element: ElementObject;
     possibleParents?: AllNodeTypes | AllNodeTypes[]
     possibleChildren?: AllNodeTypes | AllNodeTypes[]
@@ -48,12 +47,13 @@ export class ElementData {
     }
 }
 
-export default function ElementBase({ name, height, output, tags, id, data, children }: PropsWithChildren<ElementNode>) {
+export default function ElementBase({ output, tags, id, data, children }: PropsWithChildren<ElementNode>) {
     const { updateNodeData } = useReactFlow();
     const [tag, setTag] = useState(tags[0].value);
     const [renderOrder, setRenderOrder] = useState("0")
 
-    let header = <p>{name}</p>
+    let header = <p>{tags[0].name}</p>
+
     let renderOrderInput = (
         <label className="text-xs text-dark-purple-700 p-1">
             Render Order:
@@ -91,7 +91,7 @@ export default function ElementBase({ name, height, output, tags, id, data, chil
     if (output) {
         if(tags.length > 1) {
             header = (
-                <Output id={"element"} limit={false}> 
+                <Output id="element" limit={false}> 
                     <SelectField<keyof HTMLElementTagNameMap> 
                     options={tags} 
                     onChange={onTagChange} 
@@ -101,15 +101,14 @@ export default function ElementBase({ name, height, output, tags, id, data, chil
             )
         } else {
             header = (
-                <Output id={"element"} label={name} limit={false}/> 
+                <Output id="element" label={tags[0].name} limit={false}/> 
             )
         }
     }
 
     return (
-        <NodeShell header={header} footer={renderOrderInput} height={height}>
+        <NodeShell header={header} footer={renderOrderInput}>
             {children}
-            <div className="mt-0"></div>
             <Input
                 id="styling"
                 label="Styling"

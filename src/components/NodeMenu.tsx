@@ -25,6 +25,9 @@ export default function NodeMenu({ open, position, addNode }: {
             },{
                 label: "List",
                 onClick: () => addNode("list", new ElementData({tag: 'ul', possibleChildren: 'list-item'}) as {}),
+            },{
+                label: "Table",
+                onClick: () => addNode("table", new ElementData({tag: 'table'}) as {}),
             }
             ]
         },

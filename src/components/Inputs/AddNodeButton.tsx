@@ -1,4 +1,4 @@
-import { Connection, Node, useNodeConnections, useNodeId, useReactFlow, XYPosition } from "@xyflow/react"
+import { Node, useNodeConnections, useNodeId, useReactFlow, XYPosition } from "@xyflow/react"
 import { randomID } from "../../utilities"
 import { AllNodeTypes, AnyNodeData, NewNode } from "../../nodeutils"
 import { DataType } from "../../types"
@@ -30,6 +30,7 @@ export default function AddNodeButton({ nodeData, nodeType, connectionType, limi
     
     const addItem = () => {
         const newItem: NewNode = new NewNode(nodeData, nodeType, position, parentId)
+        console.log(position)
         addNodes(newItem as Node)
         addEdges({id: randomID(), source: newItem.id, target: id, sourceHandle: connectionType, targetHandle: connectionType })
     }
