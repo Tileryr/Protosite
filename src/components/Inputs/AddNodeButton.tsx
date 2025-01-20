@@ -1,15 +1,17 @@
 import { Node, useNodeConnections, useNodeId, useReactFlow, XYPosition } from "@xyflow/react"
 import { randomID } from "../../utilities"
-import { AllNodeTypes, AnyNodeData, NewNode } from "../../nodeutils"
+import { AllNodeTypes, AnyNodeData, handleID, NewNode } from "../../nodeutils"
 import { DataType } from "../../types"
 import { useState } from "react"
 import { PortID } from "../Nodes/Ports"
+import CircleButton from "./CircleButton"
 
-export default function AddNodeButton({ nodeData, nodeType, connectionType, limit, position, parentId }: {
+export default function AddNodeButton({ nodeData, nodeType, handleIndex, connectionType, limit, position, parentId }: {
     nodeData: AnyNodeData
     nodeType: AllNodeTypes
     connectionType: DataType
     limit: boolean
+    handleIndex?: number
     position?: XYPosition
     parentId?: string
 }) {
@@ -23,7 +25,7 @@ export default function AddNodeButton({ nodeData, nodeType, connectionType, limi
 
     const connectedNodes = useNodeConnections({ 
         handleType: 'target', 
-        handleId: connectionType,
+        handleId: handleID({ id: nodeID, dataType: connectionType, index: handleIndex ?? 0}),
         onConnect: checkLimit,
         onDisconnect: checkLimit
     })
@@ -31,8 +33,8 @@ export default function AddNodeButton({ nodeData, nodeType, connectionType, limi
     
     const addItem = () => {
         const newItem: NewNode = new NewNode(nodeData, nodeType, position, parentId)
-        const sourceHandle: PortID = `${connectionType}-0-${newItem.id}`
-        const targetHandle: PortID = `${connectionType}-0-${nodeID}`
+        const sourceHandle: PortID = handleID({ id: newItem.id, dataType: connectionType, index: 0})
+        const targetHandle: PortID = handleID({ id: nodeID, dataType: connectionType, index: handleIndex ?? 0})
         console.log(sourceHandle)
         console.log(targetHandle)
         addNodes(newItem as Node)
@@ -40,10 +42,6 @@ export default function AddNodeButton({ nodeData, nodeType, connectionType, limi
         addEdges({id: randomID(), source: newItem.id, target: nodeID, sourceHandle: sourceHandle, targetHandle: targetHandle })
     }
     return (
-        <button className="rounded-full h-4 aspect-square flex justify-center items-center mr-1
-        bg-dry-purple-500 hover:bg-dry-purple-400 active:bg-dry-purple-300 active:text-dark-purple-900 disabled:bg-dry-purple-950 disabled:text-dry-purple-800"
-        onClick={addItem} disabled={disabled}>
-            <span>+</span>
-        </button>
+        <CircleButton onClick={addItem} disabled={disabled}/>
     )
 }

@@ -30,6 +30,5 @@ export function handleID({ id, dataType, index }: {
   dataType: DataType
   index: number
 }): PortID {
-  const nodeID = useNodeId()
-  return `${dataType}-${index}-${nodeID}`
+  return `${dataType}-${index}-${id}`
 }

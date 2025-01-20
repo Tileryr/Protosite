@@ -7,9 +7,7 @@ export function convertHtml(root: ElementObject ) {
 }
 
 const addChildren = (parentNode: ElementObject, parentElement: HTMLElement) => {
-    const children = parentNode.children
-    console.log(parentNode)
-    console.log(children)
+    const children = parentNode.children.filter((child) => child !== undefined)
     if(children) {
         children.sort((a, b) => b.renderOrder - a.renderOrder)
         console.log(children)

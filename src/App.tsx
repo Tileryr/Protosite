@@ -20,6 +20,7 @@ import {
   type NodeTypes,
   type OnBeforeDelete,
   useReactFlow,
+  BackgroundVariant,
 } from '@xyflow/react';
 
 import '@xyflow/react/dist/style.css';
@@ -224,7 +225,7 @@ function FlowProvider({setHtml}: {setHtml: React.Dispatch<React.SetStateAction<s
         ref={reactFlowRef}
       >
         
-        <Background bgColor='#1a1b31'/>
+        <Background bgColor='#1a1b31' variant={BackgroundVariant.Lines} color='#44478f' lineWidth={0.2}/>
         <Controls />
         <DivPanel />
         <RunPanel html={setHtml}/>

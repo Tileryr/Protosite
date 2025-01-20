@@ -147,12 +147,15 @@ export function Input({id, index, label, limit, property, children}: {
     
     useEffect(() => {
         const addedProperty = limit ? connectedOutputs[0] : connectedOutputs
-        console.log(connections)
-        console.log(property)
-        console.log(updateElement(nodeData.data, property, addedProperty))
         updateNodeData(nodeId, { element: updateElement(nodeData.data, property, addedProperty) })
+        if(limit && Array.isArray(nodeData.data.element[property])) {
+            const newPropertyArray = [...nodeData.data.element[property]]
+            newPropertyArray[index ?? 0] = addedProperty
+            updateNodeData(nodeId, { element: updateElement(nodeData.data, property, newPropertyArray) })
+            console.log(newPropertyArray)
+        }
     }, [JSON.stringify(connectedOutputs)]) 
-
+    
     return (
         <Port
             id={id}

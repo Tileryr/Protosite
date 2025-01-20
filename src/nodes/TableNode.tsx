@@ -4,8 +4,11 @@ import ElementBase, { ElementData, ElementTag } from "../components/Nodes/Elemen
 import { Input } from "../components/Nodes/Ports";
 import { ElementNodeProps } from "../nodeutils";
 import { useUpdateNodeInternals } from "@xyflow/react";
+import CircleButton from "../components/Inputs/CircleButton";
 
 export default function TableNode({ id, data }: ElementNodeProps<'table'>) {
+    const updateNodeInternals = useUpdateNodeInternals();
+
     const [rowAmount, setRowAmount] = useState(1)
 
     const tags: ElementTag[] = [{
@@ -14,27 +17,34 @@ export default function TableNode({ id, data }: ElementNodeProps<'table'>) {
 
     const addRow = () => {
         setRowAmount(prev => prev + 1)
-        useUpdateNodeInternals()
+        updateNodeInternals(id)
     }
 
     return (
-        <>
         <ElementBase tags={tags} output={true} id={id} data={data} >
             {Array.from({length: rowAmount}, (number, index) => (
-            <Input
-                id='element'
-                label='Row'
-                limit={true}
-                property='children'
-                key={`${id}-${index}`}
-            >
-                <AddNodeButton nodeData={new ElementData({tag: 'tr'})} nodeType="table-row" connectionType="element" limit={true}/>
-            </Input>))}
+                <Input
+                    id='element'
+                    index={index}
+                    label='Row'
+                    limit={true}
+                    property='children'
+                    key={`${id}-${index}`}
+                >
+                    <AddNodeButton 
+                        nodeData={new ElementData({tag: 'tr'})} 
+                        nodeType="table-row" 
+                        connectionType="element" 
+                        handleIndex={index}
+                        limit={true}
+                    />
+                </Input>
+            ))}
+            <p className="justify-self-end flex items-center text-dry-purple-400">
+                <CircleButton onClick={addRow}/>
+                Row
+            </p>
         </ElementBase>
-        <div className="h-8 bg-dry-purple-800 text-center" onPointerDown={addRow}>
-            +
-        </div>
-        </>
     )
 }
 
@@ -45,14 +55,18 @@ export function TableRowNode({ id, data }: ElementNodeProps<'table-row'>) {
 
     return (
         <ElementBase tags={tags} output={true} id={id} data={data}>
-            
             <Input
                 id='element'
                 label='Children'
                 limit={false}
                 property='children'
             >
-                <AddNodeButton nodeData={new ElementData({tag: 'td'})} nodeType="table-data" connectionType="element" limit={false}/>
+                <AddNodeButton 
+                    nodeData={new ElementData({tag: 'td'})} 
+                    nodeType="table-data" 
+                    connectionType="element" 
+                    limit={false}
+                />
             </Input>
         </ElementBase>
     )
