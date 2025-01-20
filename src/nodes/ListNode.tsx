@@ -4,6 +4,7 @@ import ElementBase, { ElementData, ElementTag } from "../components/Nodes/Elemen
 import { Input } from "../components/Nodes/Ports";
 import { useEffect } from "react";
 import AddNodeButton from "../components/Inputs/AddNodeButton";
+import { handleID } from "../nodeutils";
 
 type ListElementData = ElementNodeData & { list_elements: Node[] }
 type ListNode = Node<ListElementData, 'list'>
@@ -13,7 +14,11 @@ export const ListElementData = new ElementData({ tag: 'ol', possibleChildren: 'l
 export default function ListNode({ id, data, }: NodeProps<ListNode>) {
     const { updateNode, getInternalNode } = useReactFlow()
     const listSpread = 150
-    const itemConnections = useNodeConnections({handleType: 'target', handleId: 'element'}).map(connection => connection.source)
+
+    const itemConnections = 
+    useNodeConnections({handleType: 'target', handleId: handleID({id: id, dataType: 'element', index: 0})})
+    .map(connection => connection.source)
+
     const heightOffset: number = getInternalNode(id)!.measured!.height ? getInternalNode(id)!.measured.height! : 0
     
     useEffect(() => {
@@ -40,7 +45,7 @@ export default function ListNode({ id, data, }: NodeProps<ListNode>) {
                 property='children'
             >   
                 <AddNodeButton 
-                    limit={false} 
+                    limit={true} 
                     nodeData={new ElementData({ tag: 'li', possibleParents: 'list', })} 
                     nodeType='list-item' 
                     connectionType="element" 
@@ -57,7 +62,7 @@ type ListItemNode = Node<ElementNodeData, 'list'>
 export function ListItemNode({ id, data, positionAbsoluteX, positionAbsoluteY }: NodeProps<ListItemNode>) {
     const { deleteElements, updateNode } = useReactFlow()
     
-    const parentList = useNodeConnections({handleType: 'source', handleId: 'element'})
+    const parentList = useNodeConnections({handleType: 'source', handleId: handleID({id: id, dataType: 'element', index: 0})})
     
     if(!parentList.length) {
         deleteElements({ nodes: [{ id: id }] })

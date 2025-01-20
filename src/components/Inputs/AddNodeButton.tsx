@@ -3,6 +3,7 @@ import { randomID } from "../../utilities"
 import { AllNodeTypes, AnyNodeData, NewNode } from "../../nodeutils"
 import { DataType } from "../../types"
 import { useState } from "react"
+import { PortID } from "../Nodes/Ports"
 
 export default function AddNodeButton({ nodeData, nodeType, connectionType, limit, position, parentId }: {
     nodeData: AnyNodeData
@@ -14,7 +15,7 @@ export default function AddNodeButton({ nodeData, nodeType, connectionType, limi
 }) {
     const { addNodes, addEdges } = useReactFlow()
     const [disabled, setDisabled] = useState(false)
-    const id = useNodeId()!
+    const nodeID = useNodeId()!
 
     const checkLimit = () => {
         limit && connectedNodes.length > 0 ? setDisabled(true) : setDisabled(false)
@@ -30,9 +31,13 @@ export default function AddNodeButton({ nodeData, nodeType, connectionType, limi
     
     const addItem = () => {
         const newItem: NewNode = new NewNode(nodeData, nodeType, position, parentId)
-        console.log(position)
+        const sourceHandle: PortID = `${connectionType}-0-${newItem.id}`
+        const targetHandle: PortID = `${connectionType}-0-${nodeID}`
+        console.log(sourceHandle)
+        console.log(targetHandle)
         addNodes(newItem as Node)
-        addEdges({id: randomID(), source: newItem.id, target: id, sourceHandle: connectionType, targetHandle: connectionType })
+        
+        addEdges({id: randomID(), source: newItem.id, target: nodeID, sourceHandle: sourceHandle, targetHandle: targetHandle })
     }
     return (
         <button className="rounded-full h-4 aspect-square flex justify-center items-center mr-1

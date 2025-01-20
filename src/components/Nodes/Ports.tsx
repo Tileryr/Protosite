@@ -13,16 +13,17 @@ import {
 } from "@xyflow/react";
 
 import { DataType, ElementObject } from "../../types";
-import { randomID, updateElement } from "../../utilities";
-import { AllNodeTypes, AnyNodeData } from "../../nodeutils";
+import { updateElement } from "../../utilities";
+import { AllNodeTypes, AnyNodeData, handleID } from "../../nodeutils";
 import { ElementNodeData } from "./ElementBase";
 
-type PortID = `${DataType}-${string}`
+export type PortID = `${DataType}-${number}-${string}` | DataType
 
-export function Port({ type, position, id, label, limit, connections, children }: {
+export function Port({ type, position, id, index, label, limit, connections, children }: {
     type: 'source' | 'target'
     position: Position
-    id: PortID
+    id: DataType
+    index?: number
     label: string
     limit: boolean
     connections: Connection[]
@@ -35,6 +36,8 @@ export function Port({ type, position, id, label, limit, connections, children }
     const ref = useRef<HTMLDivElement>(null);
     const nodeId = useNodeId()!;
     const currentNode: Pick<Node, "type" | "id" | "data"> = useNodesData(nodeId)!;
+    
+    const [portID] = useState<PortID>(`${id}-${index ?? 0}-${nodeId}`)
 
     let [handlePos, setHandlePos] = useState(12)
 
@@ -45,8 +48,8 @@ export function Port({ type, position, id, label, limit, connections, children }
         const isSource = type === 'source'
         const incomingNode = getNode(isSource ? target : source)!
 
-        const sourceType = sourceHandle?.split('-', 1)[0]
-        const targetType = targetHandle?.split('-', 1)[0]
+        const sourceType = sourceHandle?.split('-')[0]
+        const targetType = targetHandle?.split('-')[0]
 
         const sourceNode = isSource ? currentNode : incomingNode
         const targetNode = isSource ? incomingNode : currentNode
@@ -62,6 +65,8 @@ export function Port({ type, position, id, label, limit, connections, children }
         ? targetNodeData.possibleChildren.includes(sourceNode.type as AllNodeTypes)
         : true
 
+        console.log([sourceHandle, targetHandle])
+        console.log([sourceType, targetType])
         return sourceType === targetType && target !== source && validChild && validParent 
     }
 
@@ -75,7 +80,7 @@ export function Port({ type, position, id, label, limit, connections, children }
             <label>{label}</label>
             {type === 'source' && children}
             <Handle 
-                id={id}
+                id={portID}
                 type={type}
                 position={position}
                 className="handle"
@@ -87,22 +92,24 @@ export function Port({ type, position, id, label, limit, connections, children }
     )
 }
 
-export function Output({ id, label, limit, children }: {
+export function Output({ id, label, index, limit, children }: {
     id: DataType // data property that is outputted
+    index?: number
     limit: boolean
     label?: string
     children?: React.ReactElement
 }) {
-    const [portID] = useState<PortID>(`${id}-${randomID()}`)
-
+    const nodeId = useNodeId()!
+    
     const connections = useNodeConnections({
         handleType: 'source',
-        handleId: id,
+        handleId: handleID({ id: nodeId, dataType: id, index: index ?? 0}),
     })
 
     return (
         <Port
-            id={portID}
+            id={id}
+            index={index}
             label={label ? label : ''}
             limit={limit}
             type='source' 
@@ -116,8 +123,9 @@ export function Output({ id, label, limit, children }: {
     
 }
 
-export function Input({id, label, limit, property, children}: {
+export function Input({id, index, label, limit, property, children}: {
     id: DataType
+    index?: number
     label: string
     limit: boolean
     property: keyof ElementObject
@@ -125,13 +133,12 @@ export function Input({id, label, limit, property, children}: {
 }) {
     //do later: group stylings into big object
     const { updateNodeData } = useReactFlow(); 
-    const [portID] = useState<PortID>(`${id}-${randomID()}`)
 
     const nodeId = useNodeId()!;
     const nodeData = useNodesData<Node<ElementNodeData>>(nodeId)!
     const connections = useNodeConnections({
         handleType: 'target',
-        handleId: id,
+        handleId: handleID({ id: nodeId, dataType: id, index: index ?? 0}),
     })
 
     const connectedIds = connections.map(connection => connection.source)
@@ -140,12 +147,16 @@ export function Input({id, label, limit, property, children}: {
     
     useEffect(() => {
         const addedProperty = limit ? connectedOutputs[0] : connectedOutputs
+        console.log(connections)
+        console.log(property)
+        console.log(updateElement(nodeData.data, property, addedProperty))
         updateNodeData(nodeId, { element: updateElement(nodeData.data, property, addedProperty) })
     }, [JSON.stringify(connectedOutputs)]) 
 
     return (
         <Port
-            id={portID}
+            id={id}
+            index={index}
             label={label}
             limit={limit}
             type='target' 

@@ -3,7 +3,7 @@ import AddNodeButton from "../components/Inputs/AddNodeButton";
 import ElementBase, { ElementData, ElementTag } from "../components/Nodes/ElementBase";
 import { Input } from "../components/Nodes/Ports";
 import { ElementNodeProps } from "../nodeutils";
-import { randomID } from "../utilities";
+import { useUpdateNodeInternals } from "@xyflow/react";
 
 export default function TableNode({ id, data }: ElementNodeProps<'table'>) {
     const [rowAmount, setRowAmount] = useState(1)
@@ -12,21 +12,26 @@ export default function TableNode({ id, data }: ElementNodeProps<'table'>) {
         name: 'Table', value: 'table'
     }]
 
+    const addRow = () => {
+        setRowAmount(prev => prev + 1)
+        useUpdateNodeInternals()
+    }
+
     return (
         <>
         <ElementBase tags={tags} output={true} id={id} data={data} >
-            {Array.from({length: rowAmount}, (index) => (
+            {Array.from({length: rowAmount}, (number, index) => (
             <Input
                 id='element'
                 label='Row'
                 limit={true}
                 property='children'
-                key={`${index}-'mog`}
+                key={`${id}-${index}`}
             >
                 <AddNodeButton nodeData={new ElementData({tag: 'tr'})} nodeType="table-row" connectionType="element" limit={true}/>
             </Input>))}
         </ElementBase>
-        <div className="h-8 bg-dry-purple-800 text-center" onPointerDown={() => setRowAmount(prev => prev + 1)}>
+        <div className="h-8 bg-dry-purple-800 text-center" onPointerDown={addRow}>
             +
         </div>
         </>
