@@ -3,8 +3,10 @@ import AddNodeButton from "../components/Inputs/AddNodeButton";
 import ElementBase, { ElementData, ElementTag } from "../components/Nodes/ElementBase";
 import { Input } from "../components/Nodes/Ports";
 import { ElementNodeProps } from "../nodeutils";
-import { useUpdateNodeInternals } from "@xyflow/react";
+import { NodeResizer, useReactFlow, useUpdateNodeInternals } from "@xyflow/react";
 import CircleButton from "../components/Inputs/CircleButton";
+import useNumberField from "../components/Inputs/NumberField";
+import { updateElement } from "../utilities";
 
 export default function TableNode({ id, data }: ElementNodeProps<'table'>) {
     const updateNodeInternals = useUpdateNodeInternals();
@@ -55,6 +57,7 @@ export function TableRowNode({ id, data }: ElementNodeProps<'table-row'>) {
 
     return (
         <ElementBase tags={tags} output={true} id={id} data={data}>
+            <div className="w-96"></div>
             <Input
                 id='element'
                 label='Children'
@@ -73,18 +76,45 @@ export function TableRowNode({ id, data }: ElementNodeProps<'table-row'>) {
 }
 
 export function TableDataNode({ id, data }: ElementNodeProps<'table-data'>) {
+    const { updateNodeData } = useReactFlow()
+    
+    const [columnSpanProps, columnSpan] = useNumberField({min: 1, max: 99, onChange: (newColSpan) => {
+        updateNodeData(id, { element: updateElement(data, 'attributes', { 'colspan': newColSpan })})
+        console.log(data)
+    }})
+
+    const [rowSpanProps, rowSpan] = useNumberField({min: 1, max: 99, onChange: (newRowSpan) => 
+        updateNodeData(id, { element: updateElement(data, 'attributes', { 'rowspan': newRowSpan })})
+    })
+
+    
     const tags: ElementTag[] = [{
         name: 'Table-Data', value: 'td'
     }]
 
     return (
         <ElementBase tags={tags} output={true} id={id} data={data}>
+            <div style={{width: columnSpan * 64}}></div>
             <Input
                 id='element'
                 label='Children'
                 limit={false}
                 property='children'
             />
+            <label className="block">
+                Column Span:
+                <br></br>
+                <input {...columnSpanProps} className="w-full rounded-full bg-dry-purple-950 pl-1 leading-4"></input>
+            </label>
+            <label className="block">
+                Row Span:
+                <br></br>
+                <input {...rowSpanProps} className="w-full rounded-full bg-dry-purple-950 pl-1 leading-4"></input>
+            </label>
+            {/* <label className="block">
+                Row Span:
+                <input {...rowSpanProps}></input>
+            </label> */}
         </ElementBase>
     )
 }

@@ -15,13 +15,15 @@ const addChildren = (parentNode: ElementObject, parentElement: HTMLElement) => {
             const childElement = document.createElement(child.tag)
             child.text ? childElement.innerHTML = child.text : null
             
-            if(child.styling) {
-                child.styling.forEach(style => {
-                    for (const [property, value] of Object.entries(style)) {
-                        childElement.style[<any>property] = value
-                    }
-                });
-            }
+            child.styling?.forEach(style => {
+                for (const [property, value] of Object.entries(style)) {
+                    childElement.style[<any>property] = value
+                }
+            });
+
+            Object.entries(child.attributes ?? {}).forEach(([ attribute, value ]) => {
+                childElement.setAttribute(attribute, value)
+            })
 
             parentElement.append(childElement)
             addChildren(child, childElement)

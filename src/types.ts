@@ -6,6 +6,7 @@ export type StylingObject = Partial<Record<keyof CSSStyleDeclaration, any>>
 
 export interface ElementObject {
     tag: keyof HTMLElementTagNameMap
+    attributes: Record<string, string>
     children: ElementObject[]
     renderOrder: number
     styling?: StylingObject[]

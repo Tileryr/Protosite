@@ -3,14 +3,17 @@ import { Input, Output } from "./Ports";
 import { DataType, ElementObject } from "../../types";
 import SelectField from "../Inputs/SelectField";
 import { useReactFlow } from "@xyflow/react";
-import { updateElement } from "../../utilities";
 import NodeShell from "./NodeShell";
 import { AllNodeTypes } from "../../nodeutils";
+import useNumberField from "../Inputs/NumberField";
+import { updateElement } from "../../utilities";
 
 export type ElementNodeData = {
     element: ElementObject
     possibleParents?: AllNodeTypes | AllNodeTypes[]
     possibleChildren?: AllNodeTypes | AllNodeTypes[]
+    updatElement(): void
+    updateAttributes(): void
 }
 
 export interface ElementTag {
@@ -31,6 +34,14 @@ export class ElementData implements ElementNodeData {
     possibleParents?: AllNodeTypes | AllNodeTypes[]
     possibleChildren?: AllNodeTypes | AllNodeTypes[]
 
+    updatElement(): void {
+        console.log('as')
+    }
+
+    updateAttributes(): void {
+        console.log('as')
+    }
+
     constructor({ tag, possibleParents, possibleChildren }: {
         tag: keyof HTMLElementTagNameMap, 
         possibleParents?: AllNodeTypes | AllNodeTypes[], 
@@ -38,6 +49,7 @@ export class ElementData implements ElementNodeData {
     }) {
         this.element = {
             tag: tag,
+            attributes: {},
             children: [],
             renderOrder: 0,
             styling: []
@@ -50,23 +62,20 @@ export class ElementData implements ElementNodeData {
 export default function ElementBase({ output, tags, id, data, children }: PropsWithChildren<ElementNode>) {
     const { updateNodeData } = useReactFlow();
     const [tag, setTag] = useState(tags[0].value);
-    const [renderOrder, setRenderOrder] = useState("0")
+    
+    const [renderOrderInputProps] = useNumberField({
+        onChange: (newRenderOrder) => updateNodeData(id, { element: updateElement(data, 'renderOrder', newRenderOrder)}),
+    })
 
     let header = <p>{tags[0].name}</p>
 
     let renderOrderInput = (
         <label className="text-xs text-dark-purple-700 p-1">
             Render Order:
-            <div className="bg-dark-purple-950 rounded-lg inline">
             <input 
-                inputMode="numeric"
-                className="w-4 rounded-lg bg-dark-purple-950/0 mx-1 focus:outline-none" 
-                onMouseDownCapture={(event) => event.stopPropagation()}
-                value={renderOrder} 
-                onChange={(event) => {changeRenderOrder(event.target.value); console.log(event.target.value)}}
-                onBlur={() => {renderOrder === "" && (changeRenderOrder("0")); console.log(renderOrder)}}
+                {...renderOrderInputProps}
+                className="w-6 rounded-lg bg-dark-purple-950 mx-1 focus:outline-none pl-1" 
             />
-            </div>
         </label>
     )
 
@@ -74,18 +83,6 @@ export default function ElementBase({ output, tags, id, data, children }: PropsW
         setTag(newTag)
         updateNodeData(id, { element: updateElement(data, 'tag', newTag) })
         console.log(newTag)
-    }
-
-    const changeRenderOrder = (value: string) => {
-        let numericValue = Number(value)
-        numericValue = Math.min(numericValue, 99)
-        numericValue = Math.max(numericValue, 0)
-        let formattedValue = !isNaN(numericValue) ? numericValue.toString() : renderOrder
-        setRenderOrder(formattedValue)
-
-        updateNodeData(id, { element: updateElement(data, 'renderOrder', numericValue)})
-    
-        console.log(value)
     }
 
     if (output) {

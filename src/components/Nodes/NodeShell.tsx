@@ -6,7 +6,7 @@ export default function NodeShell({header, footer, height, children}: PropsWithC
     height?: number
 }>) {
     return (
-        <div className='w-64 border-solid border-1 border-black rounded-md bg-white shadow-xl shell' style={{height: height ? `${height}px` : 'auto'}}>
+        <div className='min-w-64 border-solid border-1 border-black rounded-md bg-white shadow-xl shell' style={{height: height ? `${height}px` : 'auto'}}>
             <header className='header'>
                 {header}
             </header>
