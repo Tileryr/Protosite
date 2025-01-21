@@ -76,8 +76,6 @@ export function TableRowNode({ id, data }: ElementNodeProps<'table-row'>) {
 }
 
 export function TableDataNode({ id, data }: ElementNodeProps<'table-data'>) {
-    const { updateNodeData } = useReactFlow()
-
     const [columnSpanProps, columnSpan] = useNumberField({min: 1, max: 99, onChange: (newColSpan) => {
         data.updateAttribute('colspan', newColSpan)
         // data.updatElement()

@@ -32,13 +32,11 @@ export default function AddNodeButton({ nodeData, nodeType, handleIndex, connect
 
     
     const addItem = () => {
-        const newItem: NewNode = new NewNode(nodeData, nodeType, position, parentId)
+        const newItem: NewNode = new NewNode({data: nodeData, type: nodeType, position: position, parentId: parentId})
         const sourceHandle: PortID = handleID({ id: newItem.id, dataType: connectionType, index: 0})
         const targetHandle: PortID = handleID({ id: nodeID, dataType: connectionType, index: handleIndex ?? 0})
-        console.log(sourceHandle)
-        console.log(targetHandle)
+
         addNodes(newItem as Node)
-        
         addEdges({id: randomID(), source: newItem.id, target: nodeID, sourceHandle: sourceHandle, targetHandle: targetHandle })
     }
     return (

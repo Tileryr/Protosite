@@ -39,46 +39,15 @@ import NodeMenu from './components/NodeMenu';
 import { randomID } from './utilities';
 import ListNode, { ListItemNode } from './nodes/ListNode';
 import GridResizer from './components/GridResizer';
-import { AllNodeTypes } from './nodeutils';
+import { AllNodeTypes, NewNode } from './nodeutils';
 import TableNode, { TableDataNode, TableRowNode } from './nodes/TableNode';
+import { ElementData } from './components/Nodes/ElementBase';
 
 const initialNodes: Node[] = [
-  {
-    id: '1',
-    data: { element: {
-      tag: 'body',
-      children: []
-    }},
-    position: { x: 0, y: 0 },
-    type: 'html',
-  },
-  {
-    id: '2',
-    data: { element: {
-      tag: 'div',
-      children: []
-    }},
-    position: { x: 100, y: 100 },
-    type: 'section',
-  },
-  {
-    id: '3',
-    data: { element: {
-      tag: 'p',
-      children: []
-    }},
-    position: { x: 100, y: 100 },
-    type: 'paragraph',
-  },
-  {
-    id: '4',
-    data: { 
-      output: 'string',
-      string: ''
-    },
-    position: { x: 100, y: 100 },
-    type: 'styling',
-  },
+  new NewNode({data: new ElementData({tag: 'html'}), type: 'html', id: '1'}) as Node,
+  new NewNode({data: new ElementData({tag: 'div'}), type: 'section'}) as Node,
+  new NewNode({data: new ElementData({tag: 'p'}), type: 'paragraph'}) as Node,
+  new NewNode({data: {text: ''}, type: 'text'}) as Node,
 ];
 
 const initialEdges: Edge[] = [

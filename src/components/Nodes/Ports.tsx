@@ -144,14 +144,17 @@ export function Input({id, index, label, limit, property, children}: {
     const connectedOutputs = connectedNodes.map(connectedNode => connectedNode.data[id])
     
     useEffect(() => {
-        const addedProperty = limit ? connectedOutputs[0] : connectedOutputs
-        updateNodeData(nodeId, { element: updateElement(nodeData.data, property, addedProperty) })
+        const newPropertyValue = limit ? connectedOutputs[0] : connectedOutputs
+
         if(limit && Array.isArray(nodeData.data.element[property])) {
             const newPropertyArray = [...nodeData.data.element[property]]
-            newPropertyArray[index ?? 0] = addedProperty
-            updateNodeData(nodeId, { element: updateElement(nodeData.data, property, newPropertyArray) })
+            newPropertyArray[index ?? 0] = newPropertyValue
+            nodeData.data.updateElement(property, newPropertyArray)
             console.log(newPropertyArray)
+            return
         }
+
+        nodeData.data.updateElement(property, newPropertyValue)
     }, [JSON.stringify(connectedOutputs)]) 
     
     return (

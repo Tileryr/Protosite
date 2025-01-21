@@ -1,12 +1,10 @@
 import { PropsWithChildren, useState } from "react";
 import { Input, Output } from "./Ports";
-import { DataType, ElementObject } from "../../types";
+import { ElementObject } from "../../types";
 import SelectField from "../Inputs/SelectField";
-import { useReactFlow } from "@xyflow/react";
 import NodeShell from "./NodeShell";
 import { AllNodeTypes } from "../../nodeutils";
 import useNumberField from "../Inputs/NumberField";
-import { updateElement } from "../../utilities";
 
 export type ElementNodeData = {
     element: ElementObject
