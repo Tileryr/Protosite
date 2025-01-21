@@ -144,7 +144,7 @@ function Flow() {
 }
 
 function FlowProvider({setHtml}: {setHtml: React.Dispatch<React.SetStateAction<string>>}) {
-  const { addNodes, screenToFlowPosition } = useReactFlow();
+  const { addNodes, screenToFlowPosition, getNode } = useReactFlow();
   
   const [nodes, setNodes] = useState<Node[]>(initialNodes);
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
@@ -187,15 +187,14 @@ function FlowProvider({setHtml}: {setHtml: React.Dispatch<React.SetStateAction<s
         y: positionY
     })
 
-    console.log(data)
     const node: Node = {
       id: randomID(),
       data: data,
       position: { x: adjustedPos.x, y: adjustedPos.y },
       type: type,
     }
+
     addNodes(node)
-    console.log(adjustedPos)
   }
 
   return (

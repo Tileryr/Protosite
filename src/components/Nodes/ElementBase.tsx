@@ -12,8 +12,8 @@ export type ElementNodeData = {
     element: ElementObject
     possibleParents?: AllNodeTypes | AllNodeTypes[]
     possibleChildren?: AllNodeTypes | AllNodeTypes[]
-    updatElement(): void
-    updateAttributes(): void
+    updateElement(property: keyof ElementObject, value: any): void
+    updateAttribute(attribute: string, value: any): void
 }
 
 export interface ElementTag {
@@ -34,14 +34,6 @@ export class ElementData implements ElementNodeData {
     possibleParents?: AllNodeTypes | AllNodeTypes[]
     possibleChildren?: AllNodeTypes | AllNodeTypes[]
 
-    updatElement(): void {
-        console.log('as')
-    }
-
-    updateAttributes(): void {
-        console.log('as')
-    }
-
     constructor({ tag, possibleParents, possibleChildren }: {
         tag: keyof HTMLElementTagNameMap, 
         possibleParents?: AllNodeTypes | AllNodeTypes[], 
@@ -56,15 +48,24 @@ export class ElementData implements ElementNodeData {
         }
         this.possibleParents = possibleParents
         this.possibleChildren = possibleChildren
+        this.updateAttribute = this.updateAttribute
+        this.updateElement = this.updateElement
+    }
+
+    updateElement(property: keyof ElementObject, value: any): void {
+        (this.element[property] as any) = value
+    }
+
+    updateAttribute(attribute: string, value: any): void {
+        this.element.attributes[attribute] = value
     }
 }
 
 export default function ElementBase({ output, tags, id, data, children }: PropsWithChildren<ElementNode>) {
-    const { updateNodeData } = useReactFlow();
     const [tag, setTag] = useState(tags[0].value);
     
     const [renderOrderInputProps] = useNumberField({
-        onChange: (newRenderOrder) => updateNodeData(id, { element: updateElement(data, 'renderOrder', newRenderOrder)}),
+        onChange: (newRenderOrder) => data.updateElement('renderOrder', newRenderOrder),
     })
 
     let header = <p>{tags[0].name}</p>
@@ -81,7 +82,7 @@ export default function ElementBase({ output, tags, id, data, children }: PropsW
 
     const onTagChange = (newTag: keyof HTMLElementTagNameMap): void => {
         setTag(newTag)
-        updateNodeData(id, { element: updateElement(data, 'tag', newTag) })
+        data.updateElement('tag', newTag)
         console.log(newTag)
     }
 

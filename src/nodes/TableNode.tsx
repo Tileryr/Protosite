@@ -3,7 +3,7 @@ import AddNodeButton from "../components/Inputs/AddNodeButton";
 import ElementBase, { ElementData, ElementTag } from "../components/Nodes/ElementBase";
 import { Input } from "../components/Nodes/Ports";
 import { ElementNodeProps } from "../nodeutils";
-import { NodeResizer, useReactFlow, useUpdateNodeInternals } from "@xyflow/react";
+import { useReactFlow, useUpdateNodeInternals } from "@xyflow/react";
 import CircleButton from "../components/Inputs/CircleButton";
 import useNumberField from "../components/Inputs/NumberField";
 import { updateElement } from "../utilities";
@@ -77,14 +77,15 @@ export function TableRowNode({ id, data }: ElementNodeProps<'table-row'>) {
 
 export function TableDataNode({ id, data }: ElementNodeProps<'table-data'>) {
     const { updateNodeData } = useReactFlow()
-    
+
     const [columnSpanProps, columnSpan] = useNumberField({min: 1, max: 99, onChange: (newColSpan) => {
-        updateNodeData(id, { element: updateElement(data, 'attributes', { 'colspan': newColSpan })})
+        data.updateAttribute('colspan', newColSpan)
+        // data.updatElement()
         console.log(data)
     }})
 
     const [rowSpanProps, rowSpan] = useNumberField({min: 1, max: 99, onChange: (newRowSpan) => 
-        updateNodeData(id, { element: updateElement(data, 'attributes', { 'rowspan': newRowSpan })})
+        data.updateAttribute('rowspan', newRowSpan)
     })
 
     
@@ -111,10 +112,6 @@ export function TableDataNode({ id, data }: ElementNodeProps<'table-data'>) {
                 <br></br>
                 <input {...rowSpanProps} className="w-full rounded-full bg-dry-purple-950 pl-1 leading-4"></input>
             </label>
-            {/* <label className="block">
-                Row Span:
-                <input {...rowSpanProps}></input>
-            </label> */}
         </ElementBase>
     )
 }

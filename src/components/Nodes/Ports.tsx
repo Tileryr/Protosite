@@ -65,8 +65,6 @@ export function Port({ type, position, id, index, label, limit, connections, chi
         ? targetNodeData.possibleChildren.includes(sourceNode.type as AllNodeTypes)
         : true
 
-        console.log([sourceHandle, targetHandle])
-        console.log([sourceType, targetType])
         return sourceType === targetType && target !== source && validChild && validParent 
     }
 
