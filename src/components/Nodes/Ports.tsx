@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useMemo } from "react";
 import {
     Handle, 
     Position,
@@ -14,13 +14,12 @@ import {
 } from "@xyflow/react";
 
 import { DataType, ElementObject } from "../../types";
-import { updateElement } from "../../utilities";
 import { AllNodeTypes, AnyNodeData, handleID } from "../../nodeutils";
 import { ElementNodeData } from "./ElementBase";
 
 export type PortID = `${DataType}-${number}-${string}` | DataType
 
-export function Port({ type, position, id, index, label, limit, connections, children }: {
+interface PortProperties {
     type: 'source' | 'target'
     position: Position
     id: DataType
@@ -28,22 +27,27 @@ export function Port({ type, position, id, index, label, limit, connections, chi
     label: string
     limit: boolean
     connections: Connection[]
-    isConnectable?: () => boolean
     children?: React.ReactElement
-}) {
+}
+
+export function Port({ type, position, id, index, label, limit, connections, children }: PortProperties) {
     const { getNode, getNodes, getEdges } = useReactFlow()
     const UpdateNodeInternals = useUpdateNodeInternals();
 
-    const ref = useRef<HTMLDivElement>(null);
     const nodeId = useNodeId()!;
-    const currentNode: Pick<Node, "type" | "id" | "data"> = useNodesData(nodeId)!;
-    
     const [portID] = useState<PortID>(`${id}-${index ?? 0}-${nodeId}`)
+    const ref = useRef<HTMLDivElement>(null);
+    const currentNode: Pick<Node, "type" | "id" | "data"> = useNodesData(nodeId)!;
 
-    let [handlePos, setHandlePos] = useState(12)
+    const isVertical = useMemo(() => position === Position.Top || position === Position.Bottom, [position])
 
-    useEffect(() => setHandlePos(ref.current ? ref.current.offsetTop + 12 : 0), [ref.current?.offsetTop])
-    useEffect(() => UpdateNodeInternals(nodeId), [handlePos])
+    const handleOffsetLeft = useMemo(() => {
+
+        return ref.current ? ref.current.offsetLeft + (ref.current.offsetWidth/2)  : 0
+    } ,[ref.current?.offsetLeft])
+    const handleOffsetTop = useMemo(() => ref.current ? ref.current.offsetTop + 12 : 0 ,[ref.current?.offsetTop])
+
+    useEffect(() => UpdateNodeInternals(nodeId), [handleOffsetLeft, handleOffsetTop])
 
     const isValidConnection: IsValidConnection = ({sourceHandle, targetHandle, source, target}) => {
         const nodes = getNodes()
@@ -92,14 +96,17 @@ export function Port({ type, position, id, index, label, limit, connections, chi
     return (
         <div ref={ref} className={position === Position.Left ? 'justify-self-start flex items-center' : 'justify-self-end flex items-center' }>
             {type === 'target' && children}
-            <label>{label}</label>
+            <label onClick={() => console.log(handleOffsetLeft)}>{label}</label>
             {type === 'source' && children}
             <Handle 
                 id={portID}
                 type={type}
                 position={position}
                 className="handle"
-                style={{ top: handlePos}}
+                style={{ 
+                    top: !isVertical ? handleOffsetTop : '',
+                    left: isVertical ? handleOffsetLeft : ''
+                }}
                 isValidConnection={isValidConnection}
                 isConnectable={isConnectable()}
             />
@@ -129,7 +136,6 @@ export function Output({ id, label, index, limit, children }: {
             limit={limit}
             type='source' 
             position={Position.Left}
-            isConnectable={() => true}
             connections={connections}
         >   
             {children}
@@ -138,6 +144,46 @@ export function Output({ id, label, index, limit, children }: {
     
 }
 
+export function useInput({ portID, property, limit, index }: {
+    portID: DataType
+    property: keyof ElementObject
+    limit: boolean
+    index?: number
+}) {
+    const nodeId = useNodeId()!;
+    const nodeData = useNodesData<Node<ElementNodeData>>(nodeId)!
+
+    const connections = useNodeConnections({
+        handleType: 'target',
+        handleId: handleID({ id: nodeId, dataType: portID, index: index ?? 0}),
+    })
+
+    const connectedIds = connections.map(connection => connection.source)
+    const connectedNodes = useNodesData(connectedIds)
+    const connectedOutputs = connectedNodes.map(connectedNode => connectedNode.data[portID])
+    
+    const newPropertyValue = limit ? connectedOutputs[0] : connectedOutputs
+
+    if(limit && Array.isArray(nodeData.data.element[property])) {
+        const newPropertyArray = [...nodeData.data.element[property]]
+        newPropertyArray[index ?? 0] = newPropertyValue
+        nodeData.data.updateElement(property, newPropertyArray)
+    } else {
+        nodeData.data.updateElement(property, newPropertyValue)
+    }
+    
+    const portProps: Pick<PortProperties, 'id' | 'index' | 'limit' | 'type' | 'connections'> = {
+        id: portID,
+        index: index,
+        limit: limit,
+        type: 'target',
+        connections: connections,
+    }
+
+    return portProps
+}
+
+//LEGACY
 export function Input({id, index, label, limit, property, children}: {
     id: DataType
     index?: number
@@ -146,47 +192,16 @@ export function Input({id, index, label, limit, property, children}: {
     property: keyof ElementObject
     children?: React.ReactElement
 }) {
-    //do later: group stylings into big object
-    const nodeId = useNodeId()!;
-    const nodeData = useNodesData<Node<ElementNodeData>>(nodeId)!
-    const connections = useNodeConnections({
-        handleType: 'target',
-        handleId: handleID({ id: nodeId, dataType: id, index: index ?? 0}),
-    })
-
-    const connectedIds = connections.map(connection => connection.source)
-    const connectedNodes = useNodesData(connectedIds)
-    const connectedOutputs = connectedNodes.map(connectedNode => connectedNode.data[id])
-    
-    useEffect(() => {
-        const newPropertyValue = limit ? connectedOutputs[0] : connectedOutputs
-
-        if(limit && Array.isArray(nodeData.data.element[property])) {
-            const newPropertyArray = [...nodeData.data.element[property]]
-            newPropertyArray[index ?? 0] = newPropertyValue
-            nodeData.data.updateElement(property, newPropertyArray)
-            console.log(newPropertyArray)
-            return
-        }
-
-        nodeData.data.updateElement(property, newPropertyValue)
-    }, [JSON.stringify(connectedOutputs)]) 
+    const portProps = useInput({ portID: id, property: property, limit: limit, index: index})
     
     return (
         <Port
-            id={id}
-            index={index}
+            {...portProps}
             label={label}
-            limit={limit}
-            type='target' 
             position={Position.Right}
-            connections={connections}
         >
             {children}
         </Port>
     )
     
 }
-
-// data { outputs: { string: "asdasdads" | element: { tag: 'div', children: [{ tag: 'p' }]}}}
-// data of element: { element: {tag: "skibidi", text: "asdasdasd", classes: "asd asd asd asd"}, output: [element, string]}

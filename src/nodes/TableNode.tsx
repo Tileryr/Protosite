@@ -1,11 +1,12 @@
 import { useState } from "react";
 import AddNodeButton from "../components/Inputs/AddNodeButton";
 import ElementBase, { ElementData, ElementTag } from "../components/Nodes/ElementBase";
-import { Input } from "../components/Nodes/Ports";
+import { Input, Output, Port, useInput } from "../components/Nodes/Ports";
 import { ElementNodeProps } from "../nodeutils";
-import { useUpdateNodeInternals } from "@xyflow/react";
+import { Position, useUpdateNodeInternals } from "@xyflow/react";
 import CircleButton from "../components/Inputs/CircleButton";
 import useNumberField from "../components/Inputs/NumberField";
+import NodeShell from "../components/Nodes/NodeShell";
 
 export default function TableNode({ id, data }: ElementNodeProps<'table'>) {
     const updateNodeInternals = useUpdateNodeInternals();
@@ -54,32 +55,40 @@ export function TableRowNode({ id, data }: ElementNodeProps<'table-row'>) {
         name: 'Table-Row', value: 'tr'
     }]
 
+    const portProps = useInput({
+        portID: 'element',
+        limit: true,
+        property: 'children',
+    })
+
     return (
-        <ElementBase tags={tags} output={true} id={id} data={data}>
-            <div className="w-96"></div>
-            <Input
-                id='element'
-                label='Children'
-                limit={false}
-                property='children'
-            >
-                <AddNodeButton 
-                    nodeData={new ElementData({tag: 'td'})} 
-                    nodeType="table-data" 
-                    connectionType="element" 
-                    limit={false}
-                />
-            </Input>
-        </ElementBase>
+        <div className="flex">
+            <NodeShell header={<Output id="element" label={tags[0].name} limit={false}/> }>
+                <Port
+                    {...portProps}
+                    position={Position.Bottom}
+                    label="Data"
+                >
+                    <AddNodeButton 
+                        nodeData={new ElementData({tag: 'td'})} 
+                        nodeType="table-data" 
+                        connectionType="element" 
+                        limit={true}
+                    />
+                </Port>
+                
+            </NodeShell>
+            <div className="w-8 bg-bright-purple-500 self-stretch rounded-r-sm text-center text-xl leading-[3]">
+                +
+            </div>
+        </div>
     )
 }
 
 export function TableDataNode({ id, data }: ElementNodeProps<'table-data'>) {
-    const [columnSpanProps, columnSpan] = useNumberField({min: 1, max: 99, onChange: (newColSpan) => {
+    const [columnSpanProps, columnSpan] = useNumberField({min: 1, max: 99, onChange: (newColSpan) => 
         data.updateAttribute('colspan', newColSpan)
-        // data.updatElement()
-        console.log(data)
-    }})
+    })
 
     const [rowSpanProps, rowSpan] = useNumberField({min: 1, max: 99, onChange: (newRowSpan) => 
         data.updateAttribute('rowspan', newRowSpan)

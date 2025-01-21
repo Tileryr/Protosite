@@ -59,7 +59,7 @@ export class ElementData implements ElementNodeData {
     }
 }
 
-export default function ElementBase({ output, tags, id, data, children }: PropsWithChildren<ElementNode>) {
+export default function ElementBase({ output, tags, data, children }: PropsWithChildren<ElementNode>) {
     const [tag, setTag] = useState(tags[0].value);
     
     const [renderOrderInputProps] = useNumberField({
