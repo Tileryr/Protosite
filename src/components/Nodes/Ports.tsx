@@ -9,7 +9,8 @@ import {
     IsValidConnection,
     useNodeConnections,
     Connection,
-    Node
+    Node,
+    getOutgoers
 } from "@xyflow/react";
 
 import { DataType, ElementObject } from "../../types";
@@ -30,7 +31,7 @@ export function Port({ type, position, id, index, label, limit, connections, chi
     isConnectable?: () => boolean
     children?: React.ReactElement
 }) {
-    const { getNode } = useReactFlow()
+    const { getNode, getNodes, getEdges } = useReactFlow()
     const UpdateNodeInternals = useUpdateNodeInternals();
 
     const ref = useRef<HTMLDivElement>(null);
@@ -45,6 +46,9 @@ export function Port({ type, position, id, index, label, limit, connections, chi
     useEffect(() => UpdateNodeInternals(nodeId), [handlePos])
 
     const isValidConnection: IsValidConnection = ({sourceHandle, targetHandle, source, target}) => {
+        const nodes = getNodes()
+        const edges = getEdges()
+
         const isSource = type === 'source'
         const incomingNode = getNode(isSource ? target : source)!
 
@@ -60,12 +64,25 @@ export function Port({ type, position, id, index, label, limit, connections, chi
         const validParent = 'possibleParents' in sourceNodeData && sourceNodeData.possibleParents
         ? sourceNodeData.possibleParents.includes(targetNode.type as AllNodeTypes)
         : true
-        
         const validChild = 'possibleChildren' in targetNodeData && targetNodeData.possibleChildren
         ? targetNodeData.possibleChildren.includes(sourceNode.type as AllNodeTypes)
         : true
 
-        return sourceType === targetType && target !== source && validChild && validParent 
+        const notSelf = target !== source
+        const sameType = sourceType === targetType
+
+        const isRecursive = (node: Node, visited = new Set()) => {
+            if(visited.has(node.id)) return false;
+
+            visited.add(node.id)
+
+            for(const outgoer of getOutgoers(node, nodes, edges)) {
+                if(outgoer.id === source) return true;
+                if(isRecursive(outgoer, visited)) return true;
+            }
+        }
+
+        return sameType && notSelf && validChild && validParent && !isRecursive(targetNode as Node)
     }
 
     const isConnectable = () => {
@@ -130,8 +147,6 @@ export function Input({id, index, label, limit, property, children}: {
     children?: React.ReactElement
 }) {
     //do later: group stylings into big object
-    const { updateNodeData } = useReactFlow(); 
-
     const nodeId = useNodeId()!;
     const nodeData = useNodesData<Node<ElementNodeData>>(nodeId)!
     const connections = useNodeConnections({

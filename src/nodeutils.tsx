@@ -17,6 +17,9 @@ export class NewNode {
   parentId?: string;
   
   constructor(nodeProperties: Partial<NewNode>) {
+    //Remove undefined properties
+    Object.keys(nodeProperties)
+    .forEach(key => nodeProperties[key as keyof NewNode] === undefined ? delete nodeProperties[key as keyof NewNode] : {})
     Object.assign(this, nodeProperties)
   }
 }

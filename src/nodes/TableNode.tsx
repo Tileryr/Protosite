@@ -3,10 +3,9 @@ import AddNodeButton from "../components/Inputs/AddNodeButton";
 import ElementBase, { ElementData, ElementTag } from "../components/Nodes/ElementBase";
 import { Input } from "../components/Nodes/Ports";
 import { ElementNodeProps } from "../nodeutils";
-import { useReactFlow, useUpdateNodeInternals } from "@xyflow/react";
+import { useUpdateNodeInternals } from "@xyflow/react";
 import CircleButton from "../components/Inputs/CircleButton";
 import useNumberField from "../components/Inputs/NumberField";
-import { updateElement } from "../utilities";
 
 export default function TableNode({ id, data }: ElementNodeProps<'table'>) {
     const updateNodeInternals = useUpdateNodeInternals();
@@ -103,12 +102,15 @@ export function TableDataNode({ id, data }: ElementNodeProps<'table-data'>) {
             <label className="block">
                 Column Span:
                 <br></br>
-                <input {...columnSpanProps} className="w-full rounded-full bg-dry-purple-950 pl-1 leading-4"></input>
+                <input
+                    {...columnSpanProps}
+                    className="w-full rounded-full bg-dry-purple-950 pl-1 leading-4">
+                </input>
             </label>
             <label className="block">
                 Row Span:
                 <br></br>
-                <input {...rowSpanProps} className="w-full rounded-full bg-dry-purple-950 pl-1 leading-4"></input>
+                <input {...rowSpanProps} className="w-full rounded-full bg-dry-purple-950 pl-1 leading-4" pattern="[0-9]*"></input>
             </label>
         </ElementBase>
     )
