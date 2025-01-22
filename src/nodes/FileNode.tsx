@@ -1,4 +1,4 @@
-import { Node, NodeProps } from "@xyflow/react";
+import { Node, NodeProps, useReactFlow } from "@xyflow/react";
 import OutputNode from "../components/Nodes/BaseOutputNode";
 import { useRef, useState } from "react";
 
@@ -8,14 +8,17 @@ type FileNodeData = {
 
 type FileNode = Node<FileNodeData, 'file'>
 
-export default function FileNode({ id }: NodeProps<FileNode>) {
+export default function FileNode({ id, data }: NodeProps<FileNode>) {
+    const { updateNodeData } = useReactFlow()
     const [currentFile, setCurrentFile] = useState<string | null>()
     const fileInputRef = useRef<HTMLInputElement>(null)
     
     const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const files = fileInputRef.current?.files
         if(!files) return
-        setCurrentFile(URL.createObjectURL(files[0]))
+        const filesrc = URL.createObjectURL(files[0])
+        setCurrentFile(filesrc)
+        updateNodeData(id, { filesrc: filesrc})
     }
 
     return (
