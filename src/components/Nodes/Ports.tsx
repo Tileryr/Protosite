@@ -172,17 +172,36 @@ export function useInput({ portID, property, limit, index }: {
         nodeData.data.updateElement(property, newPropertyValue)
     }
     
-    const portProps: Pick<PortProperties, 'id' | 'index' | 'limit' | 'type' | 'connections'> = {
+    const portProps: Pick<PortProperties, 'id' | 'limit' | 'type' | 'connections' | 'index'> = {
         id: portID,
-        index: index,
         limit: limit,
         type: 'target',
         connections: connections,
+        index: index
     }
 
     return portProps
 }
 
+export function VerticalInput({ index, children }: { index: number, children: React.ReactElement}) {
+    const portProps = useInput({
+        portID: 'element',
+        limit: true,
+        property: 'children',
+        index: index
+    })
+
+    return (
+        <Port
+            {...portProps}
+            index={index}
+            position={Position.Bottom}
+            label="Data"
+        >
+            {children}
+        </Port>
+    )
+}
 //LEGACY
 export function Input({id, index, label, limit, property, children}: {
     id: DataType
@@ -205,3 +224,4 @@ export function Input({id, index, label, limit, property, children}: {
     )
     
 }
+

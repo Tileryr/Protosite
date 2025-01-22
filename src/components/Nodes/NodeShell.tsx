@@ -1,12 +1,18 @@
 import { PropsWithChildren, ReactElement } from "react";
 
-export default function NodeShell({header, footer, height, children}: PropsWithChildren<{
+export default function NodeShell({header, footer, height, width, children}: PropsWithChildren<{
     header?: ReactElement
     footer?: ReactElement
     height?: number
+    width?: number
 }>) {
     return (
-        <div className='min-w-64 border-solid border-1 border-black rounded-md bg-white shadow-xl shell inline-block' style={{height: height ? `${height}px` : 'auto'}}>
+        <div className='border-solid border-1 border-black rounded-md bg-white shadow-xl shell inline-block'
+            style={{
+                height: height ? `${height}px` : 'auto',
+                minWidth: width ? `${width}rem` : '16rem'
+            }}
+        >
             <header className='header'>
                 {header}
             </header>

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import AddNodeButton from "../components/Inputs/AddNodeButton";
 import ElementBase, { ElementData, ElementTag } from "../components/Nodes/ElementBase";
-import { Input, Output, Port, useInput } from "../components/Nodes/Ports";
+import { Input, Output, Port, useInput, VerticalInput } from "../components/Nodes/Ports";
 import { ElementNodeProps } from "../nodeutils";
 import { Position, useUpdateNodeInternals } from "@xyflow/react";
 import CircleButton from "../components/Inputs/CircleButton";
@@ -55,30 +55,33 @@ export function TableRowNode({ id, data }: ElementNodeProps<'table-row'>) {
         name: 'Table-Row', value: 'tr'
     }]
 
-    const portProps = useInput({
-        portID: 'element',
-        limit: true,
-        property: 'children',
-    })
-
+    const [dataSlots, setDataSlots] = useState(1)
+    const dataGap = 64
+    
     return (
         <div className="flex">
             <NodeShell header={<Output id="element" label={tags[0].name} limit={false}/> }>
-                <Port
-                    {...portProps}
-                    position={Position.Bottom}
-                    label="Data"
+                <div 
+                    className="flex flex-row justify-around"
+                    style={{ gap: dataGap }}
                 >
-                    <AddNodeButton 
-                        nodeData={new ElementData({tag: 'td'})} 
-                        nodeType="table-data" 
-                        connectionType="element" 
-                        limit={true}
-                    />
-                </Port>
-                
+                    {Array.from({length: dataSlots}, (number, index) => (
+                        <VerticalInput index={index} key={`${id}-${index}`}> 
+                            <AddNodeButton 
+                                nodeData={new ElementData({tag: 'td'})} 
+                                nodeType="table-data" 
+                                connectionType="element"
+                                handleIndex={index} 
+                                limit={true}
+                            />
+                        </VerticalInput>
+                    ))}
+                </div>
             </NodeShell>
-            <div className="w-8 bg-bright-purple-500 self-stretch rounded-r-sm text-center text-xl leading-[3]">
+            <div 
+                className="w-8 bg-bright-purple-500 self-stretch rounded-r-sm text-center text-xl leading-[3]"
+                onClick={() => setDataSlots(prev => prev + 1)
+            }>
                 +
             </div>
         </div>
@@ -100,8 +103,8 @@ export function TableDataNode({ id, data }: ElementNodeProps<'table-data'>) {
     }]
 
     return (
-        <ElementBase tags={tags} output={true} id={id} data={data}>
-            <div style={{width: columnSpan * 64}}></div>
+        <ElementBase tags={tags} output={true} id={id} data={data} width={8}>
+
             <Input
                 id='element'
                 label='Children'

@@ -59,7 +59,7 @@ export class ElementData implements ElementNodeData {
     }
 }
 
-export default function ElementBase({ output, tags, data, children }: PropsWithChildren<ElementNode>) {
+export default function ElementBase({ output, tags, data, children, width }: PropsWithChildren<ElementNode> & { width?: number }) {
     const [tag, setTag] = useState(tags[0].value);
     
     const [renderOrderInputProps] = useNumberField({
@@ -103,7 +103,7 @@ export default function ElementBase({ output, tags, data, children }: PropsWithC
     }
 
     return (
-        <NodeShell header={header} footer={renderOrderInput}>
+        <NodeShell header={header} footer={renderOrderInput} width={width}>
             {children}
             <Input
                 id="styling"
