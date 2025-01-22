@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useMemo } from "react";
+import React, { useRef, useEffect, useState, useMemo, PropsWithChildren } from "react";
 import {
     Handle, 
     Position,
@@ -27,10 +27,9 @@ interface PortProperties {
     label: string
     limit: boolean
     connections: Connection[]
-    children?: React.ReactElement
 }
 
-export function Port({ type, position, id, index, label, limit, connections, children }: PortProperties) {
+export function Port({ type, position, id, index, label, limit, connections, children }: PropsWithChildren<PortProperties>) {
     const { getNode, getNodes, getEdges } = useReactFlow()
     const UpdateNodeInternals = useUpdateNodeInternals();
 
@@ -127,7 +126,7 @@ export function Output({ id, label, index, limit, children }: {
         handleType: 'source',
         handleId: handleID({ id: nodeId, dataType: id, index: index ?? 0}),
     })
-
+    //nodeData.data.updateElement(property, newPropertyValue
     return (
         <Port
             id={id}
@@ -144,14 +143,15 @@ export function Output({ id, label, index, limit, children }: {
     
 }
 
-export function useInput({ portID, property, limit, index }: {
+interface InputProps {
     portID: DataType
-    property: keyof ElementObject
     limit: boolean
     index?: number
-}) {
+    onConnection: (x: unknown) => void
+}
+
+export function useInput({ portID, limit, index, onConnection }: InputProps) {
     const nodeId = useNodeId()!;
-    const nodeData = useNodesData<Node<ElementNodeData>>(nodeId)!
 
     const connections = useNodeConnections({
         handleType: 'target',
@@ -164,64 +164,34 @@ export function useInput({ portID, property, limit, index }: {
     
     const newPropertyValue = limit ? connectedOutputs[0] : connectedOutputs
 
-    if(limit && Array.isArray(nodeData.data.element[property])) {
-        const newPropertyArray = [...nodeData.data.element[property]]
-        newPropertyArray[index ?? 0] = newPropertyValue
-        nodeData.data.updateElement(property, newPropertyArray)
-    } else {
-        nodeData.data.updateElement(property, newPropertyValue)
-    }
+    onConnection?.(newPropertyValue)
     
-    const portProps: Pick<PortProperties, 'id' | 'limit' | 'type' | 'connections' | 'index'> = {
+    const portProps: Pick<PortProperties, 'id' | 'limit' | 'type' | 'connections' | 'index' | 'position'> = {
         id: portID,
         limit: limit,
         type: 'target',
         connections: connections,
-        index: index
+        index: index,
+        position: Position.Right
     }
 
     return portProps
 }
 
-export function VerticalInput({ index, children }: { index: number, children: React.ReactElement}) {
-    const portProps = useInput({
-        portID: 'element',
-        limit: true,
-        property: 'children',
-        index: index
-    })
-
-    return (
-        <Port
-            {...portProps}
-            index={index}
-            position={Position.Bottom}
-            label="Data"
-        >
-            {children}
-        </Port>
-    )
-}
-//LEGACY
-export function Input({id, index, label, limit, property, children}: {
-    id: DataType
-    index?: number
+export function IterableInput({portID, index, label, limit, position, onConnection, children}: PropsWithChildren<InputProps & {
     label: string
-    limit: boolean
-    property: keyof ElementObject
-    children?: React.ReactElement
-}) {
-    const portProps = useInput({ portID: id, property: property, limit: limit, index: index})
+    position?: Position
+}>) {
+    const portProps = useInput({ portID, limit, index, onConnection})
     
     return (
         <Port
             {...portProps}
             label={label}
-            position={Position.Right}
+            position={position ?? portProps.position}
         >
             {children}
         </Port>
     )
-    
 }
 

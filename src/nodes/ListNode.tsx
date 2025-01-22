@@ -1,7 +1,7 @@
 import { Node, NodeProps, useNodeConnections, useReactFlow } from "@xyflow/react";
 import { ElementNodeData } from "../components/Nodes/ElementBase";
 import ElementBase, { ElementData, ElementTag } from "../components/Nodes/ElementBase";
-import { Input } from "../components/Nodes/Ports";
+import { Port, useInput } from "../components/Nodes/Ports";
 import { useEffect } from "react";
 import AddNodeButton from "../components/Inputs/AddNodeButton";
 import { handleID } from "../nodeutils";
@@ -13,10 +13,17 @@ export const ListElementData = new ElementData({ tag: 'ol', possibleChildren: 'l
 
 export default function ListNode({ id, data, }: NodeProps<ListNode>) {
     const { updateNode, getInternalNode } = useReactFlow()
+    const itemInputProps = useInput({
+        portID: "element",
+        limit: false,
+        onConnection: (newChild) => {
+            data.updateElement('children', newChild)
+        }
+    })
+
     const listSpread = 150
 
-    const itemConnections = 
-    useNodeConnections({handleType: 'target', handleId: handleID({id: id, dataType: 'element', index: 0})})
+    const itemConnections = useNodeConnections({handleType: 'target', handleId: handleID({id: id, dataType: 'element', index: 0})})
     .map(connection => connection.source)
 
     const heightOffset: number = getInternalNode(id)!.measured!.height ? getInternalNode(id)!.measured.height! : 0
@@ -38,11 +45,9 @@ export default function ListNode({ id, data, }: NodeProps<ListNode>) {
     
     return (
         <ElementBase output={true} tags={tags} id={id} data={data}>
-            <Input
-                id='element'
-                label='Items'
-                limit={false}
-                property='children'
+            <Port
+                {...itemInputProps}
+                label="Items"
             >   
                 <AddNodeButton 
                     limit={true} 
@@ -52,7 +57,7 @@ export default function ListNode({ id, data, }: NodeProps<ListNode>) {
                     position={{x: 300, y: 0}} 
                     parentId={id}
                 />
-            </Input>
+            </Port>
         </ElementBase>
     )
 }
@@ -62,6 +67,14 @@ type ListItemNode = Node<ElementNodeData, 'list'>
 export function ListItemNode({ id, data, positionAbsoluteX, positionAbsoluteY }: NodeProps<ListItemNode>) {
     const { deleteElements, updateNode } = useReactFlow()
     
+    const childrenProps = useInput({
+        portID: "element",
+        limit: false,
+        onConnection: (newText) => {
+            data.updateElement('text', newText)
+        }
+    })
+
     const parentList = useNodeConnections({handleType: 'source', handleId: handleID({id: id, dataType: 'element', index: 0})})
     
     if(!parentList.length) {
@@ -82,15 +95,13 @@ export function ListItemNode({ id, data, positionAbsoluteX, positionAbsoluteY }:
     return (
         <div onPointerDown={deparentNode}>
             <ElementBase output={true} tags={tags} id={id} data={data}>
-                <Input
-                    id='string'
-                    label='Text'
-                    limit={true}
-                    property='text'
+                <Port
+                    {...childrenProps}
+                    label="Text"
                 >
                     <AddNodeButton limit={true} nodeData={{text: ''}} nodeType='text' connectionType="string"
                     position={{x: positionAbsoluteX + 300, y: positionAbsoluteY}}/>
-                </Input>
+                </Port>
             </ElementBase>
         </div>
     )

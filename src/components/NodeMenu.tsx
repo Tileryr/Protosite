@@ -28,6 +28,12 @@ export default function NodeMenu({ open, position, addNode }: {
             },{
                 label: "Table",
                 onClick: () => addNode("table", new ElementData({tag: 'table'}) as {}),
+            },{
+                label: "File",
+                onClick: () => addNode('file', {file: ''})
+            },{
+                label: "Image",
+                onClick: () => addNode('image', new ElementData({ tag: 'img'}) as {})
             }
             ]
         },

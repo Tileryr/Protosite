@@ -1,5 +1,5 @@
 import { PropsWithChildren, useState } from "react";
-import { Input, Output } from "./Ports";
+import { useInput, Output, Port } from "./Ports";
 import { ElementObject } from "../../types";
 import SelectField from "../Inputs/SelectField";
 import NodeShell from "./NodeShell";
@@ -60,8 +60,15 @@ export class ElementData implements ElementNodeData {
 }
 
 export default function ElementBase({ output, tags, data, children, width }: PropsWithChildren<ElementNode> & { width?: number }) {
+    const styleInputProps = useInput({
+        portID: 'styling',
+        limit: false,
+        onConnection: (newStyling) => {
+            data.updateElement('styling', newStyling)
+        }
+    })
+
     const [tag, setTag] = useState(tags[0].value);
-    
     const [renderOrderInputProps] = useNumberField({
         onChange: (newRenderOrder) => data.updateElement('renderOrder', newRenderOrder),
     })
@@ -105,11 +112,9 @@ export default function ElementBase({ output, tags, data, children, width }: Pro
     return (
         <NodeShell header={header} footer={renderOrderInput} width={width}>
             {children}
-            <Input
-                id="styling"
+            <Port
+                {...styleInputProps}
                 label="Styling"
-                limit={false}
-                property="styling"
             />
         </NodeShell>
     );

@@ -23,7 +23,10 @@ export default function useNumberField({ onChange, min = 0, max = 99 }: {
         inputMode: "numeric",
         value: visibleNumber,
         onChange: (event: React.ChangeEvent<HTMLInputElement>) => changeRenderOrder(event.target.value),
-        onBlur: () => {visibleNumber === '' && (setVisibleNumber(min.toString()))}
+        onBlur: () => {
+            if(visibleNumber !== '')  return
+            changeRenderOrder(min.toString())
+        }
     }
 
     return [inputProps as DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, number]

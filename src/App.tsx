@@ -34,14 +34,17 @@ import DivNode from './nodes/DivNode';
 import TextNode from './nodes/TextNode';
 import ParagraphNode from './nodes/ParagraphNode';
 import StylingNode from './nodes/StylingNode';
+import FileNode from './nodes/FileNode';
+import ImageNode from './nodes/ImageNode';
+import TableNode, { TableDataNode, TableRowNode } from './nodes/TableNode';
 
 import NodeMenu from './components/NodeMenu';
 import { randomID } from './utilities';
 import ListNode, { ListItemNode } from './nodes/ListNode';
 import GridResizer from './components/GridResizer';
 import { AllNodeTypes, NewNode } from './nodeutils';
-import TableNode, { TableDataNode, TableRowNode } from './nodes/TableNode';
 import { ElementData } from './components/Nodes/ElementBase';
+
 
 const initialNodes: Node[] = [
   new NewNode({data: new ElementData({tag: 'html'}), type: 'html', id: '1'}) as Node,
@@ -63,7 +66,9 @@ const nodeTypes: NodeTypes = {
   'list-item': ListItemNode,
   'table': TableNode,
   'table-row': TableRowNode,
-  'table-data': TableDataNode
+  'table-data': TableDataNode,
+  'file': FileNode,
+  'image': ImageNode
 };
 
 hljs.registerLanguage('xml', xml)

@@ -1,13 +1,16 @@
-import { Input, Output } from '../components/Nodes/Ports'
-
+import { useInput, Port } from '../components/Nodes/Ports'
 import ElementBase, { ElementTag } from '../components/Nodes/ElementBase'
-import { Node, NodeProps } from '@xyflow/react'
-import { ElementNodeData } from '../components/types'
+import { ElementNodeProps } from '../nodeutils'
 
-type TextElementData = ElementNodeData
-type ParagraphNode = Node<TextElementData, 'paragraph'>
+export default function ParagraphNode({ id, data }: ElementNodeProps<'paragraph'>) {
+    const childrenInputProps = useInput({
+        portID: "string",
+        limit: false,
+        onConnection: (newText) => {
+            data.updateElement('text', newText)
+        }
+    })
 
-export default function ParagraphNode({ id, data }: NodeProps<ParagraphNode>) {
     const tags: ElementTag[] = [
         { name: "Paragraph", value: "p" },
         { name: "Span", value: "span" },
@@ -15,12 +18,10 @@ export default function ParagraphNode({ id, data }: NodeProps<ParagraphNode>) {
     ]
 
     return (
-    <ElementBase name="Paragraph" output={true} type='element' tags={tags} id={id} data={data}>
-        <Input
-            id='string'
-            label='Text'
-            limit={true}
-            property='text'
+    <ElementBase output={true} tags={tags} id={id} data={data}>
+        <Port
+            {...childrenInputProps}
+            label='Children'
         />
     </ElementBase>
     )

@@ -1,16 +1,16 @@
 import { useState } from "react";
 import AddNodeButton from "../components/Inputs/AddNodeButton";
 import ElementBase, { ElementData, ElementTag } from "../components/Nodes/ElementBase";
-import { Input, Output, Port, useInput, VerticalInput } from "../components/Nodes/Ports";
+import { IterableInput, Output, Port, useInput } from "../components/Nodes/Ports";
 import { ElementNodeProps } from "../nodeutils";
 import { Position, useUpdateNodeInternals } from "@xyflow/react";
 import CircleButton from "../components/Inputs/CircleButton";
 import useNumberField from "../components/Inputs/NumberField";
 import NodeShell from "../components/Nodes/NodeShell";
+import { ElementObject } from "../types";
 
 export default function TableNode({ id, data }: ElementNodeProps<'table'>) {
     const updateNodeInternals = useUpdateNodeInternals();
-
     const [rowAmount, setRowAmount] = useState(1)
 
     const tags: ElementTag[] = [{
@@ -25,13 +25,17 @@ export default function TableNode({ id, data }: ElementNodeProps<'table'>) {
     return (
         <ElementBase tags={tags} output={true} id={id} data={data} >
             {Array.from({length: rowAmount}, (number, index) => (
-                <Input
-                    id='element'
+                <IterableInput
+                    portID='element'
                     index={index}
                     label='Row'
                     limit={true}
-                    property='children'
                     key={`${id}-${index}`}
+                    onConnection={(newRow) => {
+                        const newRowArray = [...data.element.children]
+                        newRowArray[index] = newRow as ElementObject
+                        data.updateElement('children', newRowArray)
+                    }}
                 >
                     <AddNodeButton 
                         nodeData={new ElementData({tag: 'tr'})} 
@@ -40,7 +44,7 @@ export default function TableNode({ id, data }: ElementNodeProps<'table'>) {
                         handleIndex={index}
                         limit={true}
                     />
-                </Input>
+                </IterableInput>
             ))}
             <p className="justify-self-end flex items-center text-dry-purple-400">
                 <CircleButton onClick={addRow}/>
@@ -66,7 +70,19 @@ export function TableRowNode({ id, data }: ElementNodeProps<'table-row'>) {
                     style={{ gap: dataGap }}
                 >
                     {Array.from({length: dataSlots}, (number, index) => (
-                        <VerticalInput index={index} key={`${id}-${index}`}> 
+                        <IterableInput
+                            portID="element"
+                            label="Data"
+                            limit={true}
+                            index={index} 
+                            key={`${id}-${index}`}
+                            position={Position.Bottom}
+                            onConnection={(newData) => {
+                                const newDataArray = [...data.element.children]
+                                newDataArray[index] = newData as ElementObject
+                                data.updateElement('children', newDataArray)
+                            }}
+                        > 
                             <AddNodeButton 
                                 nodeData={new ElementData({tag: 'td'})} 
                                 nodeType="table-data" 
@@ -74,7 +90,7 @@ export function TableRowNode({ id, data }: ElementNodeProps<'table-row'>) {
                                 handleIndex={index} 
                                 limit={true}
                             />
-                        </VerticalInput>
+                        </IterableInput>
                     ))}
                 </div>
             </NodeShell>
@@ -89,27 +105,31 @@ export function TableRowNode({ id, data }: ElementNodeProps<'table-row'>) {
 }
 
 export function TableDataNode({ id, data }: ElementNodeProps<'table-data'>) {
-    const [columnSpanProps, columnSpan] = useNumberField({min: 1, max: 99, onChange: (newColSpan) => 
+    const childrenInputProps = useInput({
+        portID: "element",
+        limit: false,
+        onConnection: (newChild) => {
+            data.updateElement('children', newChild)
+        }
+    })
+
+    const [columnSpanProps] = useNumberField({min: 1, max: 99, onChange: (newColSpan) => 
         data.updateAttribute('colspan', newColSpan)
     })
 
-    const [rowSpanProps, rowSpan] = useNumberField({min: 1, max: 99, onChange: (newRowSpan) => 
+    const [rowSpanProps] = useNumberField({min: 1, max: 99, onChange: (newRowSpan) => 
         data.updateAttribute('rowspan', newRowSpan)
     })
 
-    
     const tags: ElementTag[] = [{
         name: 'Table-Data', value: 'td'
     }]
 
     return (
         <ElementBase tags={tags} output={true} id={id} data={data} width={8}>
-
-            <Input
-                id='element'
-                label='Children'
-                limit={false}
-                property='children'
+            <Port
+                label="Children"
+                {...childrenInputProps}
             />
             <label className="block">
                 Column Span:
