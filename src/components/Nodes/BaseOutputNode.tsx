@@ -8,7 +8,7 @@ export default function OutputNode({ name, height, type, children }: PropsWithCh
     height?: number
     type: DataType
 }>) {
-    const header = <Output id={type} label={name} /> 
+    const header = <Output id={type} label={name} limit={false}/> 
 
     return (
         <NodeShell header={header} height={height}> 
