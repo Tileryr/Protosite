@@ -56,6 +56,7 @@ export class ElementData implements ElementNodeData {
 
     updateAttribute(attribute: string, value: any): void {
         this.element.attributes[attribute] = value
+        console.log([attribute, value])
     }
 }
 

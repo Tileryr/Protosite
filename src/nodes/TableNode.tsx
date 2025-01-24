@@ -142,7 +142,7 @@ export function TableDataNode({ id, data }: ElementNodeProps<'table-data'>) {
             <label className="block">
                 Row Span:
                 <br></br>
-                <input {...rowSpanProps} className="w-full rounded-full bg-dry-purple-950 pl-1 leading-4" pattern="[0-9]*"></input>
+                <input {...rowSpanProps} className="w-full rounded-full bg-dry-purple-950 pl-1 leading-4"></input>
             </label>
         </ElementBase>
     )

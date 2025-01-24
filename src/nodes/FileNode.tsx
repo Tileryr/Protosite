@@ -28,7 +28,7 @@ export default function FileNode({ id, data }: NodeProps<FileNode>) {
         }
         const filesrc = URL.createObjectURL(files[0])
         setCurrentFile(files[0])
-        updateNodeData(id, { filesrc: filesrc})
+        updateNodeData(id, { filesrc: files[0]})
     }
 
     const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {

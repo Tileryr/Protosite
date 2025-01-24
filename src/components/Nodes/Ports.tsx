@@ -162,9 +162,11 @@ export function useInput({ portID, limit, index, onConnection }: InputProps) {
     const connectedNodes = useNodesData(connectedIds)
     const connectedOutputs = connectedNodes.map(connectedNode => connectedNode.data[portID])
     
-    const newPropertyValue = limit ? connectedOutputs[0] : connectedOutputs
-
-    onConnection?.(newPropertyValue)
+    useEffect(() => {
+        const newPropertyValue = limit ? connectedOutputs[0] : connectedOutputs
+        onConnection?.(newPropertyValue)
+    }, [JSON.stringify(connectedOutputs)])
+    
     
     const portProps: Pick<PortProperties, 'id' | 'limit' | 'type' | 'connections' | 'index' | 'position'> = {
         id: portID,
