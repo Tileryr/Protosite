@@ -8,6 +8,8 @@ type FileNodeData = {
 
 type FileNode = Node<FileNodeData, 'file'>
 
+export type FakeFile = Pick<File, 'lastModified' | 'name' | 'type' | 'size'> & {url: string}
+
 export default function FileNode({ id, data }: NodeProps<FileNode>) {
     const { updateNodeData } = useReactFlow()
     const [currentFile, setCurrentFile] = useState<File | null>()
@@ -28,7 +30,8 @@ export default function FileNode({ id, data }: NodeProps<FileNode>) {
         }
         
         const file = files[0]
-        const fileObject = {
+        file.arrayBuffer
+        const fileObject: FakeFile = {
             lastModified: file.lastModified,
             name: file.name,
             size: file.size,

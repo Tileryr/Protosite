@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+/*global require*/
+
 export default {
   content: [
     "./index.html",
@@ -96,8 +98,20 @@ export default {
         '800': '#0f5635',
         '900': '#0d472e',
         '950': '#06281a',
+      },
+      'white': {
+        '50': '#f7f4fd',
+        '100': '#f1ecfb',
+        '200': '#e4dbf9',
+        '300': '#cfbff3',
+        '400': '#b296ea',
+        '500': '#946ede',
+        '600': '#7d4fce',
+        '700': '#683cb4',
+        '800': '#5a3693',
+        '900': '#4a2c77',
+        '950': '#2e1556',
     },
-    
     },
     extend: {
       borderWidth: {
@@ -110,6 +124,6 @@ export default {
       }
     },
   },
-  plugins: [],
+  plugins: [require('daisyui')],
 }
 

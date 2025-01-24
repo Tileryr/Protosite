@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import ElementBase from "../components/Nodes/ElementBase";
 import { Port, useInput } from "../components/Nodes/Ports";
 import { ElementNodeProps } from "../nodeutils";
 import Warning from "../components/Warning";
 import useTextField from "../components/Inputs/TextField";
+import { FakeFile } from "./FileNode";
 
 export default function ImageNode({id, data}: ElementNodeProps<'image'>) {
     const {text: source, textFieldProps: sourceFieldProps} = useTextField({
@@ -21,7 +22,7 @@ export default function ImageNode({id, data}: ElementNodeProps<'image'>) {
         portID: 'file',
         limit: true,
         onConnection: (newFile) => {
-            let file: any = newFile
+            let file: FakeFile = newFile as FakeFile
             if(file?.type?.startsWith('image/')) {
                 data.updateAttribute('src', file.url)
                 setValidFile(true)
@@ -33,20 +34,14 @@ export default function ImageNode({id, data}: ElementNodeProps<'image'>) {
 
     
     useEffect(() => {
-        const URLIsImage = async (URL: string) => {
-            try {
-                const res = await fetch(URL)
-                if(!res.ok) {
-                    throw new Error('no image :/')   
-                }
-                const blob = await res.blob()
-                setValidSource(blob.type.startsWith('image/'))
-                
-            } catch (error) {
-                setValidSource(false)
-            } 
+        const image = new Image()
+        image.onload = () => {
+            if(image.width) setValidSource(true)
         }
-        URLIsImage(source)
+        image.onerror = () => {
+            setValidSource(false)
+        }
+        image.src = source
     }, [source])
 
     return (
@@ -70,7 +65,6 @@ export default function ImageNode({id, data}: ElementNodeProps<'image'>) {
            <label>
                 Alt:
                 <input {...altFieldProps}/>
-                
            </label>
         </ElementBase>
     )
