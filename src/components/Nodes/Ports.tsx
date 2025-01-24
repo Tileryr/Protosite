@@ -162,8 +162,11 @@ export function useInput({ portID, limit, index, onConnection }: InputProps) {
     const connectedNodes = useNodesData(connectedIds)
     const connectedOutputs = connectedNodes.map(connectedNode => connectedNode.data[portID])
     
+    console.log(connectedOutputs)
+    console.log(JSON.stringify(connectedOutputs))
     useEffect(() => {
         const newPropertyValue = limit ? connectedOutputs[0] : connectedOutputs
+        console.log("WHAT")
         onConnection?.(newPropertyValue)
     }, [JSON.stringify(connectedOutputs)])
     

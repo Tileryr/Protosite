@@ -1,4 +1,4 @@
-export type DataType = "element" | "string" | "number" | "styling" | "filesrc"
+export type DataType = "element" | "string" | "number" | "styling" | "file"
 
 //Move unsure properies to main data objects?
 

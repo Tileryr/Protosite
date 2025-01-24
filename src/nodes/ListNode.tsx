@@ -44,13 +44,13 @@ export default function ListNode({ id, data, }: NodeProps<ListNode>) {
     ]
     
     return (
-        <ElementBase output={true} tags={tags} id={id} data={data}>
+        <ElementBase output={true} tags={tags} data={data}>
             <Port
                 {...itemInputProps}
                 label="Items"
             >   
                 <AddNodeButton 
-                    limit={true} 
+                    limit={false} 
                     nodeData={new ElementData({ tag: 'li', possibleParents: 'list', })} 
                     nodeType='list-item' 
                     connectionType="element" 
@@ -68,7 +68,7 @@ export function ListItemNode({ id, data, positionAbsoluteX, positionAbsoluteY }:
     const { deleteElements, updateNode } = useReactFlow()
     
     const childrenProps = useInput({
-        portID: "element",
+        portID: "string",
         limit: false,
         onConnection: (newText) => {
             data.updateElement('text', newText)
@@ -94,7 +94,7 @@ export function ListItemNode({ id, data, positionAbsoluteX, positionAbsoluteY }:
 
     return (
         <div onPointerDown={deparentNode}>
-            <ElementBase output={true} tags={tags} id={id} data={data}>
+            <ElementBase output={true} tags={tags} data={data}>
                 <Port
                     {...childrenProps}
                     label="Text"

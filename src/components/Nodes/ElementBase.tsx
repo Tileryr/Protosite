@@ -22,7 +22,6 @@ export interface ElementTag {
 interface ElementNode {
     output: boolean
     tags: ElementTag[]
-    id: string
     data: ElementNodeData
     height?: number
 }

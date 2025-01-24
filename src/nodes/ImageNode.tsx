@@ -18,12 +18,12 @@ export default function ImageNode({id, data}: ElementNodeProps<'image'>) {
     const [validFile, setValidFile] = useState(false)
 
     const fileInputProps = useInput({
-        portID: 'filesrc',
+        portID: 'file',
         limit: true,
         onConnection: (newFile) => {
-            if((newFile as File)?.type?.startsWith('image/')) {
-                const fileURL = URL.createObjectURL(newFile as File)
-                data.updateAttribute('src', fileURL)
+            let file: any = newFile
+            if(file?.type?.startsWith('image/')) {
+                data.updateAttribute('src', file.url)
                 setValidFile(true)
             } else {
                 setValidFile(false)
@@ -50,7 +50,7 @@ export default function ImageNode({id, data}: ElementNodeProps<'image'>) {
     }, [source])
 
     return (
-        <ElementBase output={true} tags={[{ name: 'Image', value: 'img' }]} id={id} data={data}>
+        <ElementBase output={true} tags={[{ name: 'Image', value: 'img' }]} data={data}>
             <Port 
                 {...fileInputProps}
                 label="File"

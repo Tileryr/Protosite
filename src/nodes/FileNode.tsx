@@ -26,9 +26,17 @@ export default function FileNode({ id, data }: NodeProps<FileNode>) {
             updateNodeData(id, { filesrc: null })
             return
         }
-        const filesrc = URL.createObjectURL(files[0])
-        setCurrentFile(files[0])
-        updateNodeData(id, { filesrc: files[0]})
+        
+        const file = files[0]
+        const fileObject = {
+            lastModified: file.lastModified,
+            name: file.name,
+            size: file.size,
+            type: file.type,
+            url: URL.createObjectURL(file)
+        }
+        setCurrentFile(file)
+        updateNodeData(id, { file: fileObject})
     }
 
     const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
@@ -39,7 +47,7 @@ export default function FileNode({ id, data }: NodeProps<FileNode>) {
     }
 
     return (
-        <OutputNode name="File" type="filesrc" >
+        <OutputNode name="File" type="file" >
             <div className="h-32 w-auto rounded border-dashed border-red-400 border-2 flex justify-center items-center flex-col" 
                 onDrop={handleDrop}
                 onDragOver={(event) => event.preventDefault()}

@@ -44,6 +44,7 @@ import ListNode, { ListItemNode } from './nodes/ListNode';
 import GridResizer from './components/GridResizer';
 import { AllNodeTypes, NewNode } from './nodeutils';
 import { ElementData } from './components/Nodes/ElementBase';
+import VideoNode from './nodes/VideoNode';
 
 
 const initialNodes: Node[] = [
@@ -68,7 +69,8 @@ const nodeTypes: NodeTypes = {
   'table-row': TableRowNode,
   'table-data': TableDataNode,
   'file': FileNode,
-  'image': ImageNode
+  'image': ImageNode,
+  'video': VideoNode
 };
 
 hljs.registerLanguage('xml', xml)

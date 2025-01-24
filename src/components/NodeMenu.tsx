@@ -34,7 +34,10 @@ export default function NodeMenu({ open, position, addNode }: {
             },{
                 label: "Image",
                 onClick: () => addNode('image', new ElementData({ tag: 'img'}) as {})
-            }
+            },{
+                label: "Video",
+                onClick: () => addNode('video', new ElementData({ tag: 'video'}) as {})
+            },
             ]
         },
     ]
