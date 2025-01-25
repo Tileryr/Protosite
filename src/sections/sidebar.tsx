@@ -8,6 +8,7 @@ import xml from 'highlight.js/lib/languages/xml';
 import { prettify } from 'htmlfy'
 import { ElementNodeData } from "../components/Nodes/ElementBase";
 import { useClasses } from "../nodes/ClassNode";
+import Window from "./Window";
 
 hljs.registerLanguage('xml', xml)
 
@@ -28,33 +29,13 @@ export default function Sidebar({ iframeRef }: {
 
     }
 
-    const handleLoad = () => {
-        const iframeDoc = iframeRef.current?.contentWindow?.document
-        const mediaElements = iframeDoc?.querySelectorAll<HTMLMediaElement>('[data-autoplay=true]')
-
-        mediaElements?.forEach((mediaElement) => {
-            mediaElement.autoplay = true
-            delete mediaElement.dataset.autoplay         
-        })
-
-        const currentDocHTML = iframeDoc!.querySelector('html')!.outerHTML
-        setSrcDoc(currentDocHTML)
-    }
-
     const highlightedText = hljs.highlight(prettify(srcDoc), { language: "xml" }).value
 
     return (
          <div className='side-bar h-screen w-[30%] '>
             <button onClick={handleRun} className="w-8 aspect-square bg-bright-purple-600">Run</button>
             <div className='website-container select-none -webkit-select-none border-highlight border-2 rounded-xl'>
-            <iframe
-                title='window'
-                className='website-display select-none -webkit-select-none'
-                id='frame'
-                srcDoc={srcDoc}
-                onLoad={handleLoad}
-                ref={iframeRef}
-            />
+                <Window srcDoc={srcDoc} setSrcDoc={setSrcDoc} iframeRef={iframeRef}/>
             </div>
             <GridResizer direction='vertical' windowRef={iframeRef}/>
             <div className='side-window border-highlight border-2 rounded-xl'>

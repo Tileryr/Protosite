@@ -52,7 +52,3 @@ const addChildren = (parentNode: ElementObject, parentElement: HTMLElement) => {
         });
     }
 }
-
-const addClasses = () => {
-
-}
