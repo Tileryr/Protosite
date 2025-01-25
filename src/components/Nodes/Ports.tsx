@@ -73,7 +73,7 @@ export function Port({ type, position, id, index, label, limit, connections, chi
 
         const notSelf = target !== source
         const sameType = sourceType === targetType
-
+        
         const isRecursive = (node: Node, visited = new Set()) => {
             if(visited.has(node.id)) return false;
 

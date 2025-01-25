@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 
 import hljs from 'highlight.js/lib/core';
 import xml from 'highlight.js/lib/languages/xml';
@@ -37,6 +37,8 @@ import StylingNode from './nodes/StylingNode';
 import FileNode from './nodes/FileNode';
 import ImageNode from './nodes/ImageNode';
 import TableNode, { TableDataNode, TableRowNode } from './nodes/TableNode';
+import VideoNode from './nodes/VideoNode';
+import AudioNode from './nodes/AudioNode';
 
 import NodeMenu from './components/NodeMenu';
 import { randomID } from './utilities';
@@ -44,8 +46,6 @@ import ListNode, { ListItemNode } from './nodes/ListNode';
 import GridResizer from './components/GridResizer';
 import { AllNodeTypes, NewNode } from './nodeutils';
 import { ElementData } from './components/Nodes/ElementBase';
-import VideoNode from './nodes/VideoNode';
-
 
 const initialNodes: Node[] = [
   new NewNode({data: new ElementData({tag: 'html'}), type: 'html', id: '1'}) as Node,
@@ -70,7 +70,8 @@ const nodeTypes: NodeTypes = {
   'table-data': TableDataNode,
   'file': FileNode,
   'image': ImageNode,
-  'video': VideoNode
+  'video': VideoNode,
+  'audio': AudioNode
 };
 
 hljs.registerLanguage('xml', xml)
@@ -78,15 +79,27 @@ hljs.registerLanguage('xml', xml)
 function Flow() {
   const [html, setHtml] = useState<string>('')
 
-  const iframeRef = useRef(null)
-  const srcDoc: string = `
-  <html>
-    <body>
-    ${html}
-    </body>
-  </html>
-  `
+  const iframeRef = useRef<HTMLIFrameElement>(null)
+  const [srcDoc, setSrcDoc] = useState(`
+    <html>
+      <body>
+      </body>
+    </html>`)
   
+
+  useEffect(() => {
+    iframeRef.current?.contentWindow?.location.reload()
+    console.log(html)
+    setTimeout(() => {
+      setSrcDoc(`
+        <html>
+          <body>
+          ${html}
+          </body>
+        </html>
+        `)
+    }, 1000)
+  }, [html])
   const highlightedText = hljs.highlight(prettify(html), { language: "xml" }).value
   console.log(html)
   console.log(highlightedText)
@@ -103,6 +116,7 @@ function Flow() {
           <iframe
             title='window'
             className='website-display select-none -webkit-select-none'
+            id='frame'
             srcDoc={srcDoc}
             ref={iframeRef}
           />
@@ -120,7 +134,7 @@ function Flow() {
 }
 
 function FlowProvider({setHtml}: {setHtml: React.Dispatch<React.SetStateAction<string>>}) {
-  const { addNodes, screenToFlowPosition, getNode } = useReactFlow();
+  const { addNodes, screenToFlowPosition, } = useReactFlow();
   
   const [nodes, setNodes] = useState<Node[]>(initialNodes);
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
