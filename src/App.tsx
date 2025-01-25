@@ -1,8 +1,4 @@
-import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
-
-import hljs from 'highlight.js/lib/core';
-import xml from 'highlight.js/lib/languages/xml';
-import { prettify } from 'htmlfy'
+import { useState, useCallback, useRef, useMemo } from 'react';
 
 import {
   ReactFlow,
@@ -27,7 +23,6 @@ import '@xyflow/react/dist/style.css';
 import './App.css'
 
 import DivPanel from './components/DivPanel';
-import RunPanel from './components/RunPanel';
 
 import HtmlNode from './nodes/HtmlNode';
 import DivNode from './nodes/DivNode';
@@ -46,6 +41,7 @@ import ListNode, { ListItemNode } from './nodes/ListNode';
 import GridResizer from './components/GridResizer';
 import { AllNodeTypes, NewNode } from './nodeutils';
 import { ElementData } from './components/Nodes/ElementBase';
+import Sidebar from './sections/sidebar';
 
 const initialNodes: Node[] = [
   new NewNode({data: new ElementData({tag: 'html'}), type: 'html', id: '1'}) as Node,
@@ -74,66 +70,27 @@ const nodeTypes: NodeTypes = {
   'audio': AudioNode
 };
 
-hljs.registerLanguage('xml', xml)
+
 
 function Flow() {
-  const [html, setHtml] = useState<string>('')
-
-  const iframeRef = useRef<HTMLIFrameElement>(null)
-  const [srcDoc, setSrcDoc] = useState(`
-    <html>
-      <body>
-      </body>
-    </html>`)
   
 
-  useEffect(() => {
-    iframeRef.current?.contentWindow?.location.reload()
-    console.log(html)
-    setTimeout(() => {
-      setSrcDoc(`
-        <html>
-          <body>
-          ${html}
-          </body>
-        </html>
-        `)
-    }, 1000)
-  }, [html])
-  const highlightedText = hljs.highlight(prettify(html), { language: "xml" }).value
-  console.log(html)
-  console.log(highlightedText)
+  const iframeRef = useRef<HTMLIFrameElement>(null)
+
   return (
     <div className='flex w-screen h-screen'>
-      <div className='h-screen w-[70%] border-highlight border-2 rounded-xl'>
-        <ReactFlowProvider>
-          <FlowProvider setHtml={setHtml}/>
-        </ReactFlowProvider>
-      </div>
-      <GridResizer direction='horizontal' windowRef={iframeRef}/>
-      <div className='side-bar h-screen w-[30%] '>
-        <div className='website-container select-none -webkit-select-none border-highlight border-2 rounded-xl'>
-          <iframe
-            title='window'
-            className='website-display select-none -webkit-select-none'
-            id='frame'
-            srcDoc={srcDoc}
-            ref={iframeRef}
-          />
+      <ReactFlowProvider>
+        <div className='h-screen w-[70%] border-highlight border-2 rounded-xl'>
+            <FlowProvider/>
         </div>
-        <GridResizer direction='vertical' windowRef={iframeRef}/>
-        <div className='side-window border-highlight border-2 rounded-xl'>
-          <pre>
-            <code dangerouslySetInnerHTML={{__html: highlightedText}}>
-            </code>
-          </pre>
-        </div>
-      </div>
+        <GridResizer direction='horizontal' windowRef={iframeRef}/>
+        <Sidebar iframeRef={iframeRef}/>
+      </ReactFlowProvider>
     </div>
   );
 }
 
-function FlowProvider({setHtml}: {setHtml: React.Dispatch<React.SetStateAction<string>>}) {
+function FlowProvider() {
   const { addNodes, screenToFlowPosition, } = useReactFlow();
   
   const [nodes, setNodes] = useState<Node[]>(initialNodes);
@@ -217,7 +174,6 @@ function FlowProvider({setHtml}: {setHtml: React.Dispatch<React.SetStateAction<s
         <Background bgColor='#1a1b31' variant={BackgroundVariant.Lines} color='#44478f' lineWidth={0.2}/>
         <Controls />
         <DivPanel />
-        <RunPanel html={setHtml}/>
       </ReactFlow>
     </>
   )

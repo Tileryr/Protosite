@@ -13,7 +13,10 @@ export default function RunPanel({ html }: {
     const rootNode = useNodesData<Node<ElementNodeData>>('1')!
     return (
         <Panel>
-            <button onClick={() => html(convertHtml(rootNode.data.element))}>Run</button>
+            <button onClick={() => {
+                
+                html(convertHtml(rootNode.data.element))
+            }}>Run</button>
         </Panel>
     )
 }

@@ -23,6 +23,7 @@ export default function VideoNode({data}: ElementNodeProps<'video'>) {
             if(file?.type?.startsWith('video/')) {
                 data.updateAttribute('src', file.url)
                 setValidFile(true)
+                
             } else {
                 setValidFile(false)
             }
