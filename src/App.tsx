@@ -17,6 +17,7 @@ import {
   type OnBeforeDelete,
   useReactFlow,
   BackgroundVariant,
+  OnDelete,
 } from '@xyflow/react';
 
 import '@xyflow/react/dist/style.css';
@@ -42,6 +43,7 @@ import GridResizer from './components/GridResizer';
 import { AllNodeTypes, NewNode } from './nodeutils';
 import { ElementData } from './components/Nodes/ElementBase';
 import Sidebar from './sections/sidebar';
+import ClassNode, { useClasses } from './nodes/ClassNode';
 
 const initialNodes: Node[] = [
   new NewNode({data: new ElementData({tag: 'html'}), type: 'html', id: '1'}) as Node,
@@ -67,7 +69,8 @@ const nodeTypes: NodeTypes = {
   'file': FileNode,
   'image': ImageNode,
   'video': VideoNode,
-  'audio': AudioNode
+  'audio': AudioNode,
+  'class': ClassNode
 };
 
 
@@ -101,6 +104,7 @@ function FlowProvider() {
 
   const reactFlowRef = useRef<HTMLDivElement>(null)
 
+  const removeClass = useClasses((state) => state.removeClass)
   const onNodesChange: OnNodesChange = useCallback(
     (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
     [],
@@ -121,6 +125,13 @@ function FlowProvider() {
     return { nodes: filteredNodes, edges } 
   };
   
+  const onDelete: OnDelete = ({ nodes, }) => {
+    nodes.forEach(node => {
+      if(node.type !== 'class') return
+      removeClass(node.id)
+    })
+  }
+
   const onContextMenu = (event: React.MouseEvent<HTMLDivElement>) => {
     event.preventDefault();
     setContextMenuToggled(true);
@@ -164,6 +175,7 @@ function FlowProvider() {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         onBeforeDelete={onBeforeDelete}
+        onDelete={onDelete}
         fitView
         nodeTypes={nodeTypes}
         onContextMenu={onContextMenu}

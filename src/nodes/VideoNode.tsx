@@ -57,7 +57,7 @@ export default function VideoNode({data}: ElementNodeProps<'video'>) {
             </label>
             <Checkbox label="Controls?" onCheck={(checked) => data.updateAttribute('controls', checked)}/>
             <Checkbox label="Autoplay?" onCheck={(checked) => data.updateAttribute('autoplay', checked)}/>
-            <Checkbox label="Autoplay?" onCheck={(checked) => data.updateAttribute('loop', checked)}/>
+            <Checkbox label="Loop?" onCheck={(checked) => data.updateAttribute('loop', checked)}/>
         </ElementBase>
     )
 }

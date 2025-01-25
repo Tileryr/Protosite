@@ -40,6 +40,9 @@ export default function NodeMenu({ open, position, addNode }: {
             },{
                 label: "Audio",
                 onClick: () => addNode('audio', new ElementData({ tag: 'audio'}) as {})
+            },{
+                label: "Class",
+                onClick: () => addNode('class', {className: 'class'})
             },
             ]
         },

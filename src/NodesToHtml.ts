@@ -2,15 +2,11 @@ import { ElementObject } from "./types"
 
 export function convertHtml(root: ElementObject ) {
     const body = document.createElement('div')
-    addChildren(root, body).forEach((autoplayableMediaElement) => {
-        console.log(autoplayableMediaElement)
-        autoplayableMediaElement!.dataset!.autoplay = 'true'
-        // autoplayableMediaElement.setAttribute('autoplay', 'true')
-    })
+    addChildren(root, body)
     return body.outerHTML
 }
 
-const addChildren = (parentNode: ElementObject, parentElement: HTMLElement, autoplay: HTMLMediaElement[] = []) => {
+const addChildren = (parentNode: ElementObject, parentElement: HTMLElement) => {
     const children = parentNode.children.filter((child) => child !== undefined)
     if(children) {
         children.sort((a, b) => b.renderOrder - a.renderOrder)
@@ -26,14 +22,16 @@ const addChildren = (parentNode: ElementObject, parentElement: HTMLElement, auto
             });
 
             Object.entries(child.attributes ?? {}).forEach(([ attribute, value ]) => {
-                if(attribute === 'autoplay' && value === true) {autoplay.push(childElement as HTMLMediaElement); return}
+                if(attribute === 'autoplay' && value === true) {
+                    childElement!.dataset!.autoplay = 'true'
+                }
+
                 console.log([attribute, value])
                 childElement.setAttribute(attribute, value)
             })
 
             parentElement.append(childElement)
-            addChildren(child, childElement, autoplay)
+            addChildren(child, childElement)
         });
     }
-    return autoplay
 }
