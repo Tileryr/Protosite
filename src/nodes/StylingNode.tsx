@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import OutputNode from "../components/Nodes/BaseOutputNode";
 import InputField from "../components/Inputs/InputField";
 import { Node, NodeProps, useReactFlow } from "@xyflow/react";
-import { StylingObject } from "../types";
+import { StylingObject } from "./ClassNode";
 
 type StyleNodeData = {
     styling: StylingObject
 }
 
-type StyleNode = Node<StyleNodeData, 'text'>
+type StyleNode = Node<StyleNodeData, 'styling'>
 
 export default function StylingNode({ id, data }: NodeProps<StyleNode>) {
     const { updateNodeData } = useReactFlow()

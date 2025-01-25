@@ -41,7 +41,7 @@ export class ElementData implements ElementNodeData {
             attributes: {},
             children: [],
             renderOrder: 0,
-            styling: []
+            styling: {}
         }
         this.possibleParents = possibleParents
         this.possibleChildren = possibleChildren

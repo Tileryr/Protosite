@@ -1,42 +1,28 @@
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useState } from "react"
 import GridResizer from "../components/GridResizer"
 import { convertHtml } from "../NodesToHtml"
-import { Node, useNodesData } from "@xyflow/react"
+import { Node, useNodesData, useReactFlow } from "@xyflow/react"
 
 import hljs from 'highlight.js/lib/core';
 import xml from 'highlight.js/lib/languages/xml';
 import { prettify } from 'htmlfy'
 import { ElementNodeData } from "../components/Nodes/ElementBase";
+import { useClasses } from "../nodes/ClassNode";
 
 hljs.registerLanguage('xml', xml)
 
 export default function Sidebar({ iframeRef }: {
     iframeRef: React.RefObject<HTMLIFrameElement>
 }) {
+    const getClasses = useClasses((state) => state.getClasses)
     const rootNode = useNodesData<Node<ElementNodeData>>('1')!
 
     const [srcDoc, setSrcDoc] = useState('')
 
     const handleRun = () => {
-        console.count()
-        const iframeDoc = iframeRef.current?.contentWindow?.document
-        if(iframeDoc) {
-          const media: NodeListOf<HTMLMediaElement> = iframeDoc.querySelectorAll('video, audio')
-          media.forEach((mediaElement) => {
-            
-            mediaElement.pause()
-            mediaElement.src = "";
-            mediaElement.remove()
-          })
-        }
-        let newHTML = convertHtml(rootNode.data.element)
-        setSrcDoc(`
-            <html>
-                <body>
-                ${newHTML}
-                </body>
-            </html>
-        `)
+        let newHTML = convertHtml(rootNode.data.element, getClasses())
+
+        setSrcDoc(newHTML)
         console.log(newHTML)
         iframeRef.current?.contentWindow?.location.reload()
 
@@ -44,16 +30,13 @@ export default function Sidebar({ iframeRef }: {
 
     const handleLoad = () => {
         const iframeDoc = iframeRef.current?.contentWindow?.document
-        const mediaElements = iframeDoc?.querySelectorAll<HTMLMediaElement>('video, audio')
-        // console.log(iframeRef.current?.contentWindow?.document)
+        const mediaElements = iframeDoc?.querySelectorAll<HTMLMediaElement>('[data-autoplay=true]')
+
         mediaElements?.forEach((mediaElement) => {
-            console.log(mediaElement)
-            if(mediaElement?.dataset?.autoplay === 'true') {
-                mediaElement.autoplay = true
-                mediaElement.play()
-                delete mediaElement.dataset.autoplay
-            }            
+            mediaElement.autoplay = true
+            delete mediaElement.dataset.autoplay         
         })
+
         const currentDocHTML = iframeDoc!.querySelector('html')!.outerHTML
         setSrcDoc(currentDocHTML)
     }
@@ -79,7 +62,6 @@ export default function Sidebar({ iframeRef }: {
                 <code dangerouslySetInnerHTML={{__html: highlightedText}}>
                 </code>
             </pre>
-            <button onClick={() => {}}>Locked</button>
             </div>
         </div>
     )
