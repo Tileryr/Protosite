@@ -5,7 +5,7 @@ import { PortID } from "./components/Nodes/Ports"
 import { DataType } from "./types"
 
 export type AllNodeTypes = 
-  'html' | 'section' |'paragraph' | 'text' | 'styling' | 'list' | 'list-item' | 'table' | 'table-row' | 'table-data' | 'file' | 'image' | 'video' | 'audio' | 'class'
+'html' | 'section' |'paragraph' | 'text' | 'styling' | 'list' | 'list-item' | 'table' | 'table-row' | 'table-data' | 'file' | 'image' | 'video' | 'audio' | 'class' | 'class-output'
 
 export type AnyNodeData = ElementData | { text: '' } | { styling: '' }
 

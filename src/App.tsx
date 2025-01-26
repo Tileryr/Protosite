@@ -43,7 +43,8 @@ import GridResizer from './components/GridResizer';
 import { AllNodeTypes, NewNode } from './nodeutils';
 import { ElementData } from './components/Nodes/ElementBase';
 import Sidebar from './sections/sidebar';
-import ClassNode, { useClasses } from './nodes/ClassNode';
+import ClassNode, { useClasses } from './nodes/css/ClassNode';
+import ClassOutputNode from './nodes/css/ClassOutputNode';
 
 const initialNodes: Node[] = [
   new NewNode({data: new ElementData({tag: 'html'}), type: 'html', id: '1'}) as Node,
@@ -70,14 +71,11 @@ const nodeTypes: NodeTypes = {
   'image': ImageNode,
   'video': VideoNode,
   'audio': AudioNode,
-  'class': ClassNode
+  'class': ClassNode,
+  'class-output': ClassOutputNode
 };
 
-
-
 function Flow() {
-  
-
   const iframeRef = useRef<HTMLIFrameElement>(null)
 
   return (

@@ -1,4 +1,4 @@
-import { ClassInterface } from "./nodes/ClassNode"
+import { ClassInterface } from "./nodes/css/ClassNode"
 import { ElementObject } from "./types"
 
 export function convertHtml(root: ElementObject, classes: ClassInterface[] ) {
@@ -16,6 +16,9 @@ const addChildren = (parentNode: ElementObject, parentElement: HTMLElement) => {
             const childElement = document.createElement(child.tag)
             child.text ? childElement.innerHTML = child.text : null
 
+            console.log(child.classes)
+            childElement.classList.add(...child.classes)
+
             for (const [property, value] of Object.entries(child.styling ?? {})) {
                 childElement.style[<any>property] = value
             }
@@ -26,7 +29,6 @@ const addChildren = (parentNode: ElementObject, parentElement: HTMLElement) => {
                     return
                 }
 
-                console.log([attribute, value])
                 childElement.setAttribute(attribute, value)
             })
 

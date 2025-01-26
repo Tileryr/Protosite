@@ -8,7 +8,7 @@ import xml from 'highlight.js/lib/languages/xml';
 import css from 'highlight.js/lib/languages/css';
 import { prettify } from 'htmlfy'
 import { ElementNodeData } from "../components/Nodes/ElementBase";
-import { ClassInterface, useClasses } from "../nodes/ClassNode";
+import { ClassInterface, useClasses } from "../nodes/css/ClassNode";
 
 hljs.registerLanguage('xml', xml)
 hljs.registerLanguage('css', css)
@@ -70,11 +70,12 @@ export default function Sidebar({ iframeRef }: {
                 stylingString += `${property}: ${value};\n`
             }
 
-            const newRule = `${currentClass.selector} {\n ${stylingString}}`
+            const newRule = `.${currentClass.selector} {\n${stylingString ? '  ' + stylingString : ''}}`
             styleSheetString += newRule
             styleSheetString += '\n'
-            styleSheet.insertRule(`${currentClass.selector} {${stylingString}}`, styleSheet.cssRules.length)
+            styleSheet.insertRule(`.${currentClass.selector} {${stylingString}}`, styleSheet.cssRules.length)
         }
+        console.log(styleSheet)
         return styleSheetString
     }
 

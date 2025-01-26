@@ -18,7 +18,7 @@ export default function HtmlNode({ id, data }: NodeProps<HTMLNode>) {
     ]
     
     return (
-        <ElementBase tags={tags} id={id} data={data} output={false}>
+        <ElementBase tags={tags} data={data} output={false}>
             <Port
                 {...childrenInputProps}
                 label='Children'

@@ -38,10 +38,11 @@ export class ElementData implements ElementNodeData {
     }) {
         this.element = {
             tag: tag,
-            attributes: {},
-            children: [],
             renderOrder: 0,
-            styling: {}
+            attributes: {},
+            styling: {},
+            children: [],
+            classes: [],
         }
         this.possibleParents = possibleParents
         this.possibleChildren = possibleChildren
@@ -68,7 +69,17 @@ export default function ElementBase({ output, tags, data, children, width }: Pro
         }
     })
 
+    const classInputProps = useInput({
+        portID: 'class',
+        limit: false,
+        onConnection: (classes) => {
+            console.log(classes)
+            data.updateElement('classes', classes)
+        },
+    })
+
     const [tag, setTag] = useState(tags[0].value);
+
     const [renderOrderInputProps] = useNumberField({
         onChange: (newRenderOrder) => data.updateElement('renderOrder', newRenderOrder),
     })
@@ -115,6 +126,10 @@ export default function ElementBase({ output, tags, data, children, width }: Pro
             <Port
                 {...styleInputProps}
                 label="Styling"
+            />
+            <Port 
+                {...classInputProps}
+                label="Classes"
             />
         </NodeShell>
     );

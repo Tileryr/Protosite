@@ -46,6 +46,9 @@ export default function NodeMenu({ open, position, addNode }: {
             },{
                 label: "Style",
                 onClick: () => addNode('styling', {styling: {}})
+            },{
+                label: "ClassGiver",
+                onClick: () => addNode('class-output', {currentClass: ''})
             },
             ]
         },

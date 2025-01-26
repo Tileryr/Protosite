@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import OutputNode from "../components/Nodes/BaseOutputNode";
 import InputField from "../components/Inputs/InputField";
 import { Node, NodeProps, useReactFlow } from "@xyflow/react";
-import { StylingObject } from "./ClassNode";
+import { StylingObject } from "./css/ClassNode";
 
 type StyleNodeData = {
     styling: StylingObject
