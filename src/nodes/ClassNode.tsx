@@ -9,7 +9,7 @@ type Classes = Record<string, ClassInterface>
 export type StylingObject = Partial<Record<keyof CSSStyleDeclaration, any>>
 
 export interface ClassInterface {
-    name: string
+    selector: string
     styling: StylingObject
 }
 
@@ -19,7 +19,7 @@ type State = {
 
 type Action = {
     updateClasses: (newClass: ClassInterface, id: string) => void
-    updateClassName: (id: string, newName: string) => void
+    updateClassSelector: (id: string, selector: string) => void
     updateClassStyling: (id: string, styling: Record<string, unknown>) => void
     removeClass: (id: string) => void
     getClass: (id: string) => ClassInterface
@@ -29,9 +29,9 @@ type Action = {
 export const useClasses = create<State & Action>()((set, get) => ({
     classes: {},
     updateClasses: (newClass, id) => set((state) => ({ classes: {...state.classes, [id]: newClass} })),
-    updateClassName: (id, name) => set((state) => ({ classes: {...state.classes, [id]: {
+    updateClassSelector: (id, selector) => set((state) => ({ classes: {...state.classes, [id]: {
         ...state.classes[id],
-        name: name
+        selector: selector
     } } })),
     updateClassStyling: (id, styling) => set((state) => ({ classes: {...state.classes, [id]: {
         ...state.classes[id],
@@ -53,7 +53,7 @@ export default function ClassNode({ id }: NodeProps<ClassNode>) {
     const [className, setClassName] = useState(`Class`)
 
     const updateClass = useClasses((state) => state.updateClasses)
-    const updateName = useClasses((state) => state.updateClassName)
+    const updateSelector = useClasses((state) => state.updateClassSelector)
     const updateStyling = useClasses((state) => state.updateClassStyling)
 
     const currentStyling = useClasses((state) => state.classes[id]?.styling ?? {})
@@ -68,14 +68,14 @@ export default function ClassNode({ id }: NodeProps<ClassNode>) {
 
     useEffect(() => {
         updateClass({
-            name: className,
+            selector: '.class',
             styling: {}
         }, id)
     }, [id])
     
     const handleClassNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setClassName(event.target.value)
-        updateName(id, event.target.value)
+        updateSelector(id, `.${event.target.value}`)
         console.log(currentStyling)
     }
 

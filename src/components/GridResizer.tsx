@@ -31,6 +31,7 @@ export default function GridResizer({ direction, windowRef }: {
         const resizeAxis = (event: MouseEvent) => {
             const newX = event.clientX
             const newY = event.clientY
+            console.log(windowRef)
             
             switch (direction) {
                 case 'horizontal':
@@ -38,13 +39,13 @@ export default function GridResizer({ direction, windowRef }: {
                     break
                 case 'vertical':
                     previousElement.style.height = `${newY}px`
-                    console.log(newY)
                     break
             }
         }
 
         documentRef.current.addEventListener('pointerup', endResize)
         documentRef.current.addEventListener('pointermove', resizeAxis)
+        console.log(windowRef?.current)
         if(windowRef?.current) {
             windowRef.current.style.pointerEvents = 'none'
         }

@@ -2,26 +2,9 @@ import { ClassInterface } from "./nodes/ClassNode"
 import { ElementObject } from "./types"
 
 export function convertHtml(root: ElementObject, classes: ClassInterface[] ) {
-    const html = document.createElement('html')
-    html.appendChild(document.createElement('head'))
-    const body = html.appendChild(document.createElement('body'))
+    const body = document.createElement('body')
     addChildren(root, body)
-
-    const styleElement = document.createElement('style')
-    const styleSheet = new CSSStyleSheet
-
-    for (const currentClass of classes) {
-        const classStyling = currentClass.styling
-        let stylingString = ''
-        for (const [property, value] of Object.entries(classStyling)) {
-            stylingString += `${property}: ${value};\n`
-        }
-        console.log(`${currentClass.name} {\n ${stylingString}}`)
-        styleSheet.insertRule(`${currentClass.name} {${stylingString}}`, styleSheet.cssRules.length)
-    }
-    const newDocument = new DocumentFragment
-    console.log(html.ownerDocument)
-    return html.outerHTML
+    return body
 }
 
 const addChildren = (parentNode: ElementObject, parentElement: HTMLElement) => {
