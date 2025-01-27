@@ -113,13 +113,12 @@ export function Port({ type, position, id, index, label, limit, connections, chi
     )
 }
 
-export function Output({ id, label, index, limit, children }: {
+export function Output({ id, label, index, limit, children }: PropsWithChildren<{
     id: DataType // data property that is outputted
     index?: number
     limit: boolean
     label?: string
-    children?: React.ReactElement
-}) {
+}>) {
     const nodeId = useNodeId()!
     
     const connections = useNodeConnections({

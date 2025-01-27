@@ -32,19 +32,18 @@ body {
   justify-content: stretch;
   place-items: center;
   background-color: var(--main-bg-color);
+  overflow: hidden;
 }
 
 .shell {
   background: var(--midtone);
   color: var(--sub-white);
-  border-radius: 2px;
-  border: var(--highlight) 0px solid;
+  /* border-radius: 2px; */
 }
 
 .header {
   color: var(--white);
   background: var(--midtone);
-  border-radius: 2px;
   border-bottom: var(--highlight) 1px solid;
   padding: 2px;
   padding-left: 4px;

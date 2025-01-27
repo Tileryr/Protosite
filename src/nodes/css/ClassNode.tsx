@@ -92,9 +92,11 @@ export default function ClassNode({ id }: NodeProps<ClassNode>) {
     const handleBlur = () => {
         if(!className) {
             setClassName('Class')
+            updateSelector(id, 'Class')
         }
         if(isSelectorTaken(`${className}`, id)) {
             setClassName(`${className}-1`)
+            updateSelector(id, `${className}-1`)
         }
     }
 

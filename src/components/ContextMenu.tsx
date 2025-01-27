@@ -1,25 +1,35 @@
 import { useEffect, useState } from "react"
 import { randomID } from "../utilities"
 
-export default function ContextMenu({ positionX, positionY, open, options}: {
+export default function ContextMenu({ positionX, positionY, open, options, root}: {
     positionX: number
     positionY: number
+    root: boolean
     open: boolean
     options: ContextMenuOption[]
 }) {
     const [currentlyOpenMenu, setCurrentlyOpenMenu] = useState<number | null>(null)
 
+    const horizontalOpenDirection: 'left' | 'right' = positionX > window.screen.width/2 ? 'right' : 'left'
+
+    let currentTimeout: number
     const onMenuItemHover = (menuItemIndex: number) => {
-        window.setTimeout(() => {
+        console.log(menuItemIndex)
+        currentTimeout = setTimeout(() => {
             setCurrentlyOpenMenu(menuItemIndex)
         }, 200)
     }
 
+    const onMenuItemLeave = () => {
+        clearTimeout(currentTimeout)
+    }
+
     useEffect(() => {setCurrentlyOpenMenu(null)}, [open])
     return (
-        <menu style={{ top: positionY, left: positionX, display: open ? "block" : "none"}} 
-        className="absolute w-64 border-solid border-1 border-black rounded-md bg-white shadow-xl z-10"
-        key={randomID()}
+        <menu style={{ top: positionY, left: positionX, display: open ? "block" : "none", 
+            transform: `translateX(${horizontalOpenDirection === 'right' && root ? '-100%' : '0%'})`
+        }} 
+        className="absolute w-48 border-solid border-1 border-dry-purple-800 rounded-md bg-dry-purple-950 shadow-l z-10 py-2"
         >   
             {options.map((option, index) => {
                 const innerMenu = option.innerMenuOptions ? true : false
@@ -28,18 +38,22 @@ export default function ContextMenu({ positionX, positionY, open, options}: {
                 return (
                     <div key={randomID()}>
                         <li 
-                            onMouseOver={() => onMenuItemHover(index)} 
-                            onMouseDown={option.onClick}
-                        >
-                            {option.label}
+                            onPointerOver={() => onMenuItemHover(index)} 
+                            onPointerLeave={onMenuItemLeave}
+                            onPointerDown={option.onClick}
+                            className="relative"
+                        >   
+                            <p className="mx-3 pl-2 py-0.5 text-xl hover:bg-bright-purple-700 rounded-lg">{option.label}</p>
+                            
+                            {innerMenu && 
+                            <ContextMenu 
+                                positionX={horizontalOpenDirection === 'left' ? 196 : -196}
+                                positionY={-8}
+                                open={currentlyOpenMenu === index}
+                                options={option.innerMenuOptions ?? []}
+                                root={false}
+                            />}
                         </li>
-                        {innerMenu && 
-                        <ContextMenu 
-                            positionX={100}
-                            positionY={0}
-                            open={currentlyOpenMenu === index}
-                            options={option.innerMenuOptions ?? []}
-                        />}
                     </div>
                 )
             })}

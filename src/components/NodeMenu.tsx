@@ -45,7 +45,13 @@ export default function NodeMenu({ open, position, addNode }: {
                 onClick: () => addNode('class', {className: 'class'})
             },{
                 label: "Style",
-                onClick: () => addNode('styling', {styling: {}})
+                onClick: () => addNode('styling', {styling: {}}),
+                innerMenuOptions: [
+                {
+                    label: "ClassGiver",
+                    onClick: () => addNode('class-output', {currentClass: ''})
+                },
+                ]
             },{
                 label: "ClassGiver",
                 onClick: () => addNode('class-output', {currentClass: ''})
@@ -59,6 +65,7 @@ export default function NodeMenu({ open, position, addNode }: {
             positionY={position.y}
             open={open}
             options={options}
+            root={true}
         />
     )
 }

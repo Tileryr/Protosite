@@ -5,7 +5,7 @@ import { useClasses } from "./ClassNode";
 import { useEffect, useState } from "react";
 
 type ClassOutputNode = Node<{class: ''}>
-export default function ClassOutputNode({ id }: NodeProps<ClassOutputNode>) {
+export default function ClassOutputNode({ id, selected }: NodeProps<ClassOutputNode>) {
     const { updateNodeData } = useReactFlow()
     const classes = useClasses((state) => state.classes)
     const classIDs = Object.keys(classes)
@@ -41,20 +41,25 @@ export default function ClassOutputNode({ id }: NodeProps<ClassOutputNode>) {
     }
 
     return (
-        <NodeShell header={<Output id='class' label={selectedClass.selector} limit={false}></Output>}>
-            <select 
-                title="Class" 
-                className='nodrag appearance-none bg-bright-purple-800 rounded my-1 pl-1' 
-                onChange={handleChange}
-                value={selectedClassIndex}
-            >
-                {currentClassValues.map(({ selector }, index) => {
-                    return <option value={index} 
-                    className="text-dry-purple-900 bg-bright-purple-50" 
-                    key={classIDs[index]}
-                    >{selector}</option>
-                })}
-            </select>
-        </NodeShell>
+            <div className={`bg-green-600 px-1 py-1 rounded outline-2
+                ${selected ? "outline-green-400 outline" : " outline-white-50 hover:outline"}
+            `}>
+                <Output id='class' label='' limit={false}>
+                    <select 
+                        title="Class" 
+                        className='appearance-none bg-green-500 rounded px-1 min-w-32' 
+                        onChange={handleChange}
+                        value={selectedClassIndex}
+                    >
+                        {currentClassValues.map(({ selector }, index) => {
+                            return <option value={index} 
+                            className="text-dry-purple-900 bg-bright-purple-50 w-full" 
+                            key={classIDs[index]}
+                            >{selector}</option>
+                        })}
+                    </select>
+                </Output>
+                
+            </div>
     )
 }
