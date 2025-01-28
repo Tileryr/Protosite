@@ -19,14 +19,16 @@ permissions:
 concurrency:
   group: 'pages'
   cancel-in-progress: true
-
+  
+env:
+  VITE_GOOGLE_API_KEY: ${{ secrets.VITE_GOOGLE_API_KEY }}
+  
 jobs:
   # Single deploy job since we're just deploying
   deploy:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-      GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
