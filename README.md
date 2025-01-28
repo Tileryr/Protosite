@@ -1,8 +1,8 @@
-# React + Vite
+# Protosite  
+Quickly create frontends while simultaneously making code to use later.
+## Features
+* Create classes and style them
+* Real time view of your website
+* Take your output and use it for other projects
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Made for [Hack Club High Seas](https://highseas.hackclub.com/)
