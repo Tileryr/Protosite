@@ -1,10 +1,13 @@
 import { DetailedHTMLProps, InputHTMLAttributes, useState } from "react"
 
-export default function useNumberField({ onChange, min = 0, max = 99 }: {
+export interface NumberFieldProps {
     onChange?: (x: number) => void
     min?: number
     max?: number
-}): [DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, number] {
+}
+export default function useNumberField({ onChange, min = 0, max = 99 }: NumberFieldProps):
+[DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, number] 
+{
     const [number, setNumber] = useState<number>(min)
     const [visibleNumber, setVisibleNumber] = useState<string>(number.toString())
 

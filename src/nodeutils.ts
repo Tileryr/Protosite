@@ -3,11 +3,13 @@ import { randomID } from "./utilities"
 import { ElementData, ElementNodeData } from "./components/Nodes/ElementBase"
 import { PortID } from "./components/Nodes/Ports"
 import { DataType } from "./types"
+import { StylingObject } from "./nodes/css/ClassNode"
 
 export type AllNodeTypes = 
-'html' | 'section' |'paragraph' | 'text' | 'styling' | 'list' | 'list-item' | 'table' | 'table-row' | 'table-data' | 'file' | 'image' | 'video' | 'audio' | 'class' | 'class-output'
+'html' | 'section' |'paragraph' | 'text' | 'styling' | 'list' | 'list-item' | 'table' | 'table-row' | 'table-data' | 'file' | 'image' | 'video' | 'audio' | 
+'class' | 'class-output' | 'typography'
 
-export type AnyNodeData = ElementData | { text: '' } | { styling: '' }
+export type AnyNodeData = ElementData | ClassNodeData | { text: '' } | { styling: '' }
 
 export class NewNode {
   data!: AnyNodeData;
@@ -23,6 +25,27 @@ export class NewNode {
     Object.assign(this, nodeProperties)
   }
 }
+
+export class ClassNodeData implements ClassNodeDataType {
+  styling: StylingObject = {}
+
+  constructor() {
+    this.updateStyling = this.updateStyling
+  }
+
+  updateStyling(property: string, value: any) {
+    console.log(property, value)
+    // this.styling = {...this.styling, [property]: value}
+    this.styling[<any>property] = value
+  }
+}
+
+export type ClassNodeDataType = {
+  styling: StylingObject,
+  updateStyling(property: string, value: any): void
+}
+
+export type ClassNodeProps<type extends string> = NodeProps<Node<ClassNodeDataType, type>>
 
 export type ElementNodeProps<NodeType extends string> = NodeProps<Node<ElementNodeData, NodeType>>
 

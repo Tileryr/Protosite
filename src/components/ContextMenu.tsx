@@ -9,10 +9,10 @@ export default function ContextMenu({ positionX, positionY, open, options, root}
     options: ContextMenuOption[]
 }) {
     const [currentlyOpenMenu, setCurrentlyOpenMenu] = useState<number | null>(null)
-
     const horizontalOpenDirection: 'left' | 'right' = positionX > window.screen.width/2 ? 'right' : 'left'
+    
+    let currentTimeout: NodeJS.Timeout
 
-    let currentTimeout: number
     const onMenuItemHover = (menuItemIndex: number) => {
         console.log(menuItemIndex)
         currentTimeout = setTimeout(() => {
@@ -40,7 +40,11 @@ export default function ContextMenu({ positionX, positionY, open, options, root}
                         <li 
                             onPointerOver={() => onMenuItemHover(index)} 
                             onPointerLeave={onMenuItemLeave}
-                            onPointerDown={option.onClick}
+                            onPointerDown={(event) => {
+                                event.stopPropagation()
+                                option.onClick?.()
+                            }}
+
                             className="relative"
                         >   
                             <p className="mx-3 pl-2 py-0.5 text-xl hover:bg-bright-purple-700 rounded-lg">{option.label}</p>

@@ -23,7 +23,7 @@ export default function TableNode({ id, data }: ElementNodeProps<'table'>) {
     }
 
     return (
-        <ElementBase tags={tags} output={true} id={id} data={data} >
+        <ElementBase tags={tags} output={true} data={data} >
             {Array.from({length: rowAmount}, (number, index) => (
                 <IterableInput
                     portID='element'
@@ -126,7 +126,7 @@ export function TableDataNode({ id, data }: ElementNodeProps<'table-data'>) {
     }]
 
     return (
-        <ElementBase tags={tags} output={true} id={id} data={data} width={8}>
+        <ElementBase tags={tags} output={true} data={data} width={8}>
             <Port
                 label="Children"
                 {...childrenInputProps}

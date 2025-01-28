@@ -20,7 +20,7 @@ export default function DivNode({ id, data }: NodeProps<DivNode>) {
     ]
     
     return (
-    <ElementBase output={true} tags={tags} id={id} data={data}>
+    <ElementBase output={true} tags={tags} data={data}>
         <Port
             {...childrenInputProps}
             label='Children'

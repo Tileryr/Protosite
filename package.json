@@ -13,6 +13,7 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
+    "@types/node": "^22.10.10",
     "@xyflow/react": "^12.3.6",
     "highlight.js": "^11.11.1",
     "htmlfy": "^0.5.1",

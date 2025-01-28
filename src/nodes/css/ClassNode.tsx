@@ -69,6 +69,7 @@ export default function ClassNode({ id }: NodeProps<ClassNode>) {
     const currentStyling = useClasses((state) => state.classes[id]?.styling ?? {})
 
     const stylingInputProps = useInput({ portID: 'styling', limit: false, onConnection: (style) => {
+        console.log('ok bud')
         const styling: StylingObject[] = style as StylingObject[] ?? []
         const mergedStyling = styling.reduce((currentStyling, newStyling) => {
             return {...currentStyling, ...newStyling}

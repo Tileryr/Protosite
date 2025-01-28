@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useMemo } from 'react';
+import { useState, useCallback, useRef } from 'react';
 
 import {
   ReactFlow,
@@ -21,7 +21,6 @@ import {
 } from '@xyflow/react';
 
 import '@xyflow/react/dist/style.css';
-import './App.css'
 
 import DivPanel from './components/DivPanel';
 
@@ -45,6 +44,7 @@ import { ElementData } from './components/Nodes/ElementBase';
 import Sidebar from './sections/sidebar';
 import ClassNode, { useClasses } from './nodes/css/ClassNode';
 import ClassOutputNode from './nodes/css/ClassOutputNode';
+import TypographyNode from './nodes/css/TypographyNode';
 
 const initialNodes: Node[] = [
   new NewNode({data: new ElementData({tag: 'html'}), type: 'html', id: '1'}) as Node,
@@ -72,7 +72,8 @@ const nodeTypes: NodeTypes = {
   'video': VideoNode,
   'audio': AudioNode,
   'class': ClassNode,
-  'class-output': ClassOutputNode
+  'class-output': ClassOutputNode,
+  'typography': TypographyNode
 };
 
 function Flow() {

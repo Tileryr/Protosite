@@ -1,6 +1,6 @@
 import ContextMenu, { ContextMenuOption } from "./ContextMenu";
 
-import { AllNodeTypes } from "../nodeutils";
+import { AllNodeTypes, ClassNodeData } from "../nodeutils";
 import { ElementData } from "./Nodes/ElementBase";
 
 export default function NodeMenu({ open, position, addNode }: { 
@@ -46,15 +46,12 @@ export default function NodeMenu({ open, position, addNode }: {
             },{
                 label: "Style",
                 onClick: () => addNode('styling', {styling: {}}),
-                innerMenuOptions: [
-                {
-                    label: "ClassGiver",
-                    onClick: () => addNode('class-output', {currentClass: ''})
-                },
-                ]
             },{
                 label: "ClassGiver",
                 onClick: () => addNode('class-output', {currentClass: ''})
+            },{
+                label: "Typography",
+                onClick: () =>addNode('typography', new ClassNodeData() as {})
             },
             ]
         },
