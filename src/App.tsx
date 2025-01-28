@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useContext, Context, createContext } from 'react';
 
 import {
   ReactFlow,
@@ -46,6 +46,7 @@ import ClassNode, { useClasses } from './nodes/css/ClassNode';
 import ClassOutputNode from './nodes/css/ClassOutputNode';
 import TypographyNode from './nodes/css/TypographyNode';
 
+
 const initialNodes: Node[] = [
   new NewNode({data: new ElementData({tag: 'html'}), type: 'html', id: '1'}) as Node,
   new NewNode({data: new ElementData({tag: 'div'}), type: 'section'}) as Node,
@@ -76,19 +77,28 @@ const nodeTypes: NodeTypes = {
   'typography': TypographyNode
 };
 
+export const OpenContext = createContext(0)
+
 function Flow() {
   const iframeRef = useRef<HTMLIFrameElement>(null)
+  const [open, setOpen] = useState(0)
 
   return (
-    <div className='flex w-screen h-screen'>
+    <OpenContext.Provider value={open}>
+    <div className='flex w-screen h-screen max-sm:flex-col'>
       <ReactFlowProvider>
-        <div className='h-screen w-[70%] border-highlight border-2 rounded-xl'>
+        <div className='hidden max-sm:flex justify-center gap-2 py-1'>
+          <button className='bg-bright-purple-600 rounded-full px-3' onClick={() => setOpen(0)}>Graph</button>
+          <button className='bg-bright-purple-600 rounded-full px-3' onClick={() => setOpen(1)}>HTML</button>
+        </div>
+        <div className={`h-screen w-[70%] max-sm:w-full ${open === 0 ? '' : 'max-sm:hidden'} border-highlight border-2`}>
             <FlowProvider/>
         </div>
         <GridResizer direction='horizontal' windowRef={iframeRef}/>
         <Sidebar iframeRef={iframeRef}/>
       </ReactFlowProvider>
     </div>
+    </OpenContext.Provider>
   );
 }
 
@@ -181,10 +191,8 @@ function FlowProvider() {
         onMouseDownCapture={() => setContextMenuToggled(false)}
         ref={reactFlowRef}
       >
-        
         <Background bgColor='#1a1b31' variant={BackgroundVariant.Lines} color='#44478f' lineWidth={0.2}/>
-        <Controls />
-        <DivPanel />
+        <Controls className='!bg-dry-purple-950 !text-dry-purple-700 !rounded !gap-1'/>
       </ReactFlow>
     </>
   )

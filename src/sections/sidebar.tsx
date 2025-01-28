@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useContext, useState } from "react"
 import GridResizer from "../components/GridResizer"
 import { convertHtml } from "../NodesToHtml"
 import { Node, useNodesData } from "@xyflow/react"
@@ -9,6 +9,7 @@ import css from 'highlight.js/lib/languages/css';
 import { prettify } from 'htmlfy'
 import { ElementNodeData } from "../components/Nodes/ElementBase";
 import { ClassInterface, useClasses } from "../nodes/css/ClassNode";
+import { OpenContext } from "../App";
 
 hljs.registerLanguage('xml', xml)
 hljs.registerLanguage('css', css)
@@ -17,6 +18,8 @@ export default function Sidebar({ iframeRef }: {
     iframeRef: React.RefObject<HTMLIFrameElement>
 }) {
     const getClasses = useClasses((state) => state.getClasses)
+    const open = useContext(OpenContext) === 1
+
     const rootNode = useNodesData<Node<ElementNodeData>>('1')!
 
     const [windowBody, setWindowBody] = useState(document.createElement('body'))
@@ -80,9 +83,11 @@ export default function Sidebar({ iframeRef }: {
     }
 
     return (
-         <div className='side-bar h-screen w-[30%] '>
-            <button onClick={handleRun} className="w-8 aspect-square bg-bright-purple-600">Run</button>
-            <div className='website-container select-none -webkit-select-none border-highlight border-2 rounded-xl'>
+         <div className={`side-bar h-screen w-[30%] ${open ? '' : 'max-sm:hidden'} max-sm:w-full`}>
+            <div className={`website-container select-none -webkit-select-none border-highlight border-2 flex-col max-sm:h-1/2`}>
+                <div className="bg-dark-purple-950">
+                    <button onClick={handleRun} className="bg-bright-purple-600 rounded-sm m-1 px-1">Load</button>
+                </div>
                 <iframe
                     title='window'
                     className='website-display select-none -webkit-select-none'
@@ -96,15 +101,22 @@ export default function Sidebar({ iframeRef }: {
                     `}
                     ref={iframeRef}
                 />
-
             </div>
             <GridResizer direction='vertical' windowRef={iframeRef}/>
-            <div className='side-window border-highlight border-2 rounded-xl'>
-                <div>
-                    <button onClick={() => setOpenPanel(0)}>HTML</button>
-                    <button onClick={() => setOpenPanel(1)}>CSS</button>
-                </div>
-                <pre>
+            <div className="bg-bright-purple-900 border-t-2 border-l-2 border-highlight">
+                <button onClick={() => setOpenPanel(0)} 
+                className={`bg-dark-purple-950 border-r-2 border-highlight mr-2 text-lg px-1 ${openPanel === 0 ? 'text-white-50' : 'text-white-400'}`}>
+                    <strong>HTML</strong>
+                    </button>
+                <button onClick={() => setOpenPanel(1)} 
+                className={`bg-dark-purple-950 border-x-2 border-highlight px-1 text-lg ${openPanel === 1 ? 'text-white-50' : 'text-white-400'}`}
+                >
+                    <strong>CSS</strong>
+                </button>
+            </div>
+            <div className='side-window border-l-2 border-highlight bg-bright-purple-700 pl-4'>
+                
+                <pre >
                     <code dangerouslySetInnerHTML={{__html: panels[openPanel]}}>
                     </code>
                 </pre>

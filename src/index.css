@@ -111,6 +111,16 @@ h1 {
   line-height: 1.1;
 }
 
+.react-flow__attribution {
+  background-color: #23213600 !important;
+  color: #e9eaee !important; 
+}
+
+.react-flow__controls-button {
+  background-color: #f1ecfb !important;
+  border: none !important;
+  border-radius: 5% !important;
+}
 /* REPLACE LATER */
 
 /*!

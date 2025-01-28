@@ -51,6 +51,6 @@ export default function GridResizer({ direction, windowRef }: {
         }
     }
     return (
-        <div ref={selfRef} className={`${style} bg-background`} onPointerDown={resizeWindow}></div>
+        <div ref={selfRef} className={`${style} bg-background max-sm:hidden`} onPointerDown={resizeWindow}></div>
     )
 }
