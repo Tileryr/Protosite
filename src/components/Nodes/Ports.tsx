@@ -64,12 +64,12 @@ export function Port({ type, position, id, index, label, limit, connections, chi
         const sourceNodeData: AnyNodeData = sourceNode.data as AnyNodeData
         const targetNodeData: AnyNodeData = targetNode.data as AnyNodeData
 
-        const validParent = 'possibleParents' in sourceNodeData && sourceNodeData.possibleParents
+        const validParent = targetType !== 'element' || ('possibleParents' in sourceNodeData && sourceNodeData.possibleParents
         ? sourceNodeData.possibleParents.includes(targetNode.type as AllNodeTypes)
-        : true
-        const validChild = 'possibleChildren' in targetNodeData && targetNodeData.possibleChildren
+        : true)
+        const validChild = targetType !== 'element' || ('possibleChildren' in targetNodeData && targetNodeData.possibleChildren
         ? targetNodeData.possibleChildren.includes(sourceNode.type as AllNodeTypes)
-        : true
+        : true)
 
         const notSelf = target !== source
         const sameType = sourceType === targetType

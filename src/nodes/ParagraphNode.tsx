@@ -21,7 +21,7 @@ export default function ParagraphNode({ id, data }: ElementNodeProps<'paragraph'
     <ElementBase output={true} tags={tags} data={data}>
         <Port
             {...childrenInputProps}
-            label='Children'
+            label='Text'
         />
     </ElementBase>
     )
