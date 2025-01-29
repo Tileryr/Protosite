@@ -53,10 +53,10 @@ export default function FileNode({ id, data }: NodeProps<FileNode>) {
 
     return (
         <OutputNode name="File" type="file" >
-            <div className="h-32 w-auto rounded border-dashed border-red-400 border-2 flex justify-center items-center flex-col" 
+            {/* <div className="h-32 w-auto rounded border-dashed border-red-400 border-2 flex justify-center items-center flex-col" 
                 onDrop={handleDrop}
                 onDragOver={(event) => event.preventDefault()}
-            >   
+            >    */}
                 <label onClick={() => console.log(currentFile)} 
                 className="block text-center bg-bright-purple-950 hover:bg-dry-purple-950 active:bg-dark-purple-800 rounded p-1 text-sm"
                 >
@@ -72,7 +72,7 @@ export default function FileNode({ id, data }: NodeProps<FileNode>) {
                     </input>
                     <span className="ml-4" style={{ display: fileName ? 'inline' : 'none' }}>{fileName}</span>
                 </label>
-            </div>
+            {/* </div> */}
         </OutputNode>
     )
 }

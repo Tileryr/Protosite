@@ -49,15 +49,18 @@ export default function NodeMenu({ open, position, addNode }: {
                     label: "Class",
                     onClick: () => addNode('class', {className: 'class'})
                 },{
+                    label: "Class Propagater",
+                    onClick: () => addNode('class-output', {currentClass: ''})
+                },{
                     label: "Style",
                     onClick: () => addNode('styling', {styling: {}}),
                 },{
-                    label: "ClassGiver",
-                    onClick: () => addNode('class-output', {currentClass: ''})
-                },{
                     label: "Typography",
-                    onClick: () =>addNode('typography', new ClassNodeData() as {})
-                },
+                    onClick: () => addNode('typography', new ClassNodeData() as {})
+                },{
+                    label: "Sizing",
+                    onClick: () => addNode('sizing', new ClassNodeData() as {}),
+                }
             ]
         }
     ]

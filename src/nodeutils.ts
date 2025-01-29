@@ -7,7 +7,7 @@ import { StylingObject } from "./nodes/css/ClassNode"
 
 export type AllNodeTypes = 
 'html' | 'section' |'paragraph' | 'text' | 'styling' | 'list' | 'list-item' | 'table' | 'table-row' | 'table-data' | 'file' | 'image' | 'video' | 'audio' | 
-'class' | 'class-output' | 'typography'
+'class' | 'class-output' | 'typography' | 'sizing'
 
 export type AnyNodeData = ElementData | ClassNodeData | { text: '' } | { styling: '' }
 

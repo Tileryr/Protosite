@@ -44,6 +44,7 @@ import ClassNode, { useClasses } from './nodes/css/ClassNode';
 import ClassOutputNode from './nodes/css/ClassOutputNode';
 import TypographyNode from './nodes/css/TypographyNode';
 import { OpenContext } from './contexts';
+import SizingNode from './nodes/css/SizingNode';
 
 
 const initialNodes: Node[] = [
@@ -73,10 +74,9 @@ const nodeTypes: NodeTypes = {
   'audio': AudioNode,
   'class': ClassNode,
   'class-output': ClassOutputNode,
-  'typography': TypographyNode
+  'typography': TypographyNode,
+  'sizing': SizingNode
 };
-
-
 
 function Flow() {
   const iframeRef = useRef<HTMLIFrameElement>(null)
