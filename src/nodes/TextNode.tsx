@@ -268,17 +268,14 @@ export default function TextNode({ id }: NodeProps<TextNode>) {
         <OutputNode name="Text" type='string'>
             <div>
                 <button 
-                style={{background: boldActived ? 'blue' : 'rgb(255, 255, 255)'}} 
                 onClick={() => setBoldActivated(prev => !prev)} 
-                className='w-8 aspect-square'>B</button>
+                className={`w-6 aspect-square leading-6 rounded ${boldActived ? 'bg-blue-700' : 'bg-dark-purple-800'} `
+                }>B</button>
                 <button
-                style={{background: italicizedActived ? 'blue' : 'rgb(255, 255, 255)'}}  
-                className='w-8 aspect-square' 
+                className={`w-6 aspect-square leading-6 rounded mx-1 ${italicizedActived ? 'bg-blue-700' : 'bg-dark-purple-800'} `} 
                 onClick={() => setItalicizedActivated(prev => !prev)}>I</button>
             </div>
-            
-
-            <div contentEditable onPaste={handlePaste} className='w-full h-full nodrag' ref={textFieldRef} onInput={onChange}></div>
+            <div contentEditable onPaste={handlePaste} className='w-full h-full nodrag mt-2 focus:outline outline-2 outline-white-100 rounded pl-1' ref={textFieldRef} onInput={onChange}></div>
         </OutputNode>
     )
 }

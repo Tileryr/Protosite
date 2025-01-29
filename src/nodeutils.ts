@@ -28,6 +28,7 @@ export class NewNode {
 
 export class ClassNodeData implements ClassNodeDataType {
   styling: StylingObject = {}
+  imports = []
 
   constructor() {
     this.updateStyling = this.updateStyling
@@ -35,12 +36,12 @@ export class ClassNodeData implements ClassNodeDataType {
 
   updateStyling(property: string, value: any) {
     console.log(property, value)
-    // this.styling = {...this.styling, [property]: value}
     this.styling[<any>property] = value
   }
 }
 
 export type ClassNodeDataType = {
+  imports: string[]
   styling: StylingObject,
   updateStyling(property: string, value: any): void
 }

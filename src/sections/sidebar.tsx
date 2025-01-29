@@ -9,7 +9,7 @@ import css from 'highlight.js/lib/languages/css';
 import { prettify } from 'htmlfy'
 import { ElementNodeData } from "../components/Nodes/ElementBase";
 import { ClassInterface, useClasses } from "../nodes/css/ClassNode";
-import { OpenContext } from "../App";
+import { OpenContext } from '../contexts'
 
 hljs.registerLanguage('xml', xml)
 hljs.registerLanguage('css', css)
@@ -18,6 +18,8 @@ export default function Sidebar({ iframeRef }: {
     iframeRef: React.RefObject<HTMLIFrameElement>
 }) {
     const getClasses = useClasses((state) => state.getClasses)
+    const imports = useClasses(state => state.getImports())
+
     const open = useContext(OpenContext) === 1
 
     const rootNode = useNodesData<Node<ElementNodeData>>('1')!
@@ -64,16 +66,22 @@ export default function Sidebar({ iframeRef }: {
 
         let styleSheetString = ''
         if(!styleSheet) return styleSheetString
-        
+
+        for (const currentImport of imports) {
+            const newImport = `@import url('${currentImport}');`
+            styleSheetString += `${newImport}\n`
+            styleSheet.insertRule(newImport)
+        }
+
         for (const currentClass of classes) {
             const classStyling = currentClass.styling
             let stylingString = ''
 
             for (const [property, value] of Object.entries(classStyling)) {
-                stylingString += `${property}: ${value};\n`
+                stylingString += `  ${property}: ${value};\n`
             }
 
-            const newRule = `.${currentClass.selector} {\n${stylingString ? '  ' + stylingString : ''}}`
+            const newRule = `.${currentClass.selector} {\n${stylingString ?? ''}}`
             styleSheetString += newRule
             styleSheetString += '\n'
             styleSheet.insertRule(`.${currentClass.selector} {${stylingString}}`, styleSheet.cssRules.length)

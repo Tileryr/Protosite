@@ -146,7 +146,7 @@ interface InputProps {
     portID: DataType
     limit: boolean
     index?: number
-    onConnection: (x: unknown) => void
+    onConnection: (x: unknown, y: Record<string, unknown>[]) => void
 }
 
 export function useInput({ portID, limit, index, onConnection }: InputProps) {
@@ -159,11 +159,12 @@ export function useInput({ portID, limit, index, onConnection }: InputProps) {
 
     const connectedIds = connections.map(connection => connection.source)
     const connectedNodes = useNodesData(connectedIds)
-    const connectedOutputs = connectedNodes.map(connectedNode => connectedNode.data[portID])
-    
+    const connectedOutputs = connectedNodes.map(connectedNode => connectedNode.data)
+
     useEffect(() => {
-        const newPropertyValue = limit ? connectedOutputs[0] : connectedOutputs
-        onConnection?.(newPropertyValue)
+        const mainValues = connectedOutputs.map(output => output[portID])
+        const newPropertyValue = limit ? mainValues[0] : mainValues
+        onConnection?.(newPropertyValue, connectedOutputs)
     }, [JSON.stringify(connectedOutputs)])
     
     

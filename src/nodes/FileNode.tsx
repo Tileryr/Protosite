@@ -22,15 +22,17 @@ export default function FileNode({ id, data }: NodeProps<FileNode>) {
     const fileInputRef = useRef<HTMLInputElement>(null)
     
     const handleChange = () => {
+        console.log('hey guys!!')
         const files = fileInputRef.current?.files
+        console.log(files)
         if(!files?.length) {
+            console.log(files)
             setCurrentFile(null); 
-            updateNodeData(id, { filesrc: null })
+            updateNodeData(id, { file: null })
             return
         }
-        
+
         const file = files[0]
-        file.arrayBuffer
         const fileObject: FakeFile = {
             lastModified: file.lastModified,
             name: file.name,

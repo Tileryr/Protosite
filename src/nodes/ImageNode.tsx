@@ -22,11 +22,13 @@ export default function ImageNode({id, data}: ElementNodeProps<'image'>) {
         portID: 'file',
         limit: true,
         onConnection: (newFile) => {
+            console.log(newFile)
             let file: FakeFile = newFile as FakeFile
             if(file?.type?.startsWith('image/')) {
                 data.updateAttribute('src', file.url)
                 setValidFile(true)
             } else {
+                data.updateAttribute('src', '')
                 setValidFile(false)
             }
         }

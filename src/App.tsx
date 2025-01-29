@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useContext, Context, createContext } from 'react';
+import { useState, useCallback, useRef, createContext } from 'react';
 
 import {
   ReactFlow,
@@ -22,8 +22,6 @@ import {
 
 import '@xyflow/react/dist/style.css';
 
-import DivPanel from './components/DivPanel';
-
 import HtmlNode from './nodes/HtmlNode';
 import DivNode from './nodes/DivNode';
 import TextNode from './nodes/TextNode';
@@ -45,6 +43,7 @@ import Sidebar from './sections/sidebar';
 import ClassNode, { useClasses } from './nodes/css/ClassNode';
 import ClassOutputNode from './nodes/css/ClassOutputNode';
 import TypographyNode from './nodes/css/TypographyNode';
+import { OpenContext } from './contexts';
 
 
 const initialNodes: Node[] = [
@@ -77,7 +76,7 @@ const nodeTypes: NodeTypes = {
   'typography': TypographyNode
 };
 
-export const OpenContext = createContext(0)
+
 
 function Flow() {
   const iframeRef = useRef<HTMLIFrameElement>(null)
