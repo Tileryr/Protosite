@@ -2,16 +2,17 @@ import { DetailedHTMLProps, InputHTMLAttributes, useState } from "react"
 
 export interface NumberFieldProps {
     onChange?: (x: number) => void
+    onBlur?: (x: number) => number
     min?: number
     max?: number
 }
-export default function useNumberField({ onChange, min = 0, max = 99 }: NumberFieldProps):
+export default function useNumberField({ onChange, onBlur, min = 0, max = 99 }: NumberFieldProps):
 [DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, number] 
 {
     const [number, setNumber] = useState<number>(min)
     const [visibleNumber, setVisibleNumber] = useState<string>(number.toString())
 
-    const changeRenderOrder = (value: string) => {
+    const reformatNumber = (value: string) => {
         if(value === '') {setVisibleNumber(''); return}
         let numericValue = Number(value.replace(/\D/g,''))
         numericValue = Math.min(numericValue, max)
@@ -25,10 +26,20 @@ export default function useNumberField({ onChange, min = 0, max = 99 }: NumberFi
     const inputProps = {
         inputMode: "numeric",
         value: visibleNumber,
-        onChange: (event: React.ChangeEvent<HTMLInputElement>) => changeRenderOrder(event.target.value),
+        onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
+            setVisibleNumber(event.target.value)
+            if(!isNaN(Number(event.target.value))) {
+                setNumber(Number(event.target.value))
+            } else {
+                setNumber(min)
+            }
+        },
         onBlur: () => {
-            if(visibleNumber !== '')  return
-            changeRenderOrder(min.toString())
+            if(onBlur) {
+                reformatNumber(onBlur(number).toString())
+                return
+            }
+            reformatNumber(visibleNumber)
         }
     }
 

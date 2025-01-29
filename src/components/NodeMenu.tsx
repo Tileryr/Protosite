@@ -12,7 +12,6 @@ export default function NodeMenu({ open, position, addNode }: {
     const options: ContextMenuOption[] = [
         {
             label: "HTML",
-            onClick: () => addNode("html", new ElementData({tag: 'body'}) as {}),
             innerMenuOptions: [{
                 label: "Section",
                 onClick: () => addNode("section", new ElementData({tag: 'div'}) as {}),
@@ -40,21 +39,27 @@ export default function NodeMenu({ open, position, addNode }: {
             },{
                 label: "Audio",
                 onClick: () => addNode('audio', new ElementData({ tag: 'audio'}) as {})
-            },{
-                label: "Class",
-                onClick: () => addNode('class', {className: 'class'})
-            },{
-                label: "Style",
-                onClick: () => addNode('styling', {styling: {}}),
-            },{
-                label: "ClassGiver",
-                onClick: () => addNode('class-output', {currentClass: ''})
-            },{
-                label: "Typography",
-                onClick: () =>addNode('typography', new ClassNodeData() as {})
             },
             ]
         },
+        {
+            label: 'CSS',
+            innerMenuOptions: [
+                {
+                    label: "Class",
+                    onClick: () => addNode('class', {className: 'class'})
+                },{
+                    label: "Style",
+                    onClick: () => addNode('styling', {styling: {}}),
+                },{
+                    label: "ClassGiver",
+                    onClick: () => addNode('class-output', {currentClass: ''})
+                },{
+                    label: "Typography",
+                    onClick: () =>addNode('typography', new ClassNodeData() as {})
+                },
+            ]
+        }
     ]
     return (
         <ContextMenu
