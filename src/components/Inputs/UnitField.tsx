@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { PropsWithChildren, useState } from "react";
 import useNumberField, { NumberFieldProps } from "./NumberField";
 
-export default function UnitField({ onChange, label, min, max }: Pick<NumberFieldProps, 'min' | 'max'> & {
+export default function UnitField({ onChange, label, min, max, children }: PropsWithChildren<Pick<NumberFieldProps, 'min' | 'max'> & {
     onChange: (value: number, unit: string) => void
     label: string
-}) {
+}>) {
     const [unit, setUnit] = useState('px')
     const [inputProps, inputValue] = useNumberField({
         min,
@@ -20,6 +20,7 @@ export default function UnitField({ onChange, label, min, max }: Pick<NumberFiel
     return (
         <label>
             {label}
+            {children}
             <div className="flex">
                 <input {...inputProps} className="rounded-l-full bg-dry-purple-950 pl-1 leading-4 flex-shrink nodrag">
                 </input>

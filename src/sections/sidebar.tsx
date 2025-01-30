@@ -93,8 +93,8 @@ export default function Sidebar({ iframeRef }: {
     return (
          <div className={`side-bar h-screen w-[30%] ${open ? '' : 'max-sm:hidden'} max-sm:w-full`}>
             <div className={`website-container select-none -webkit-select-none border-highlight border-2 flex-col max-sm:h-1/2`}>
-                <div className="bg-dark-purple-950">
-                    <button onClick={handleRun} className="bg-bright-purple-600 rounded-sm m-1 px-1">Load</button>
+                <div className="bg-dark-purple-950 border-highlight border-2">
+                    <button onClick={handleRun} className="bg-bright-purple-600 px-1 h-8">Load</button>
                 </div>
                 <iframe
                     title='window'
@@ -113,18 +113,17 @@ export default function Sidebar({ iframeRef }: {
             <GridResizer direction='vertical' windowRef={iframeRef}/>
             <div className="bg-bright-purple-900 border-t-2 border-l-2 border-highlight">
                 <button onClick={() => setOpenPanel(0)} 
-                className={`bg-dark-purple-950 border-r-2 border-highlight mr-2 text-lg px-1 ${openPanel === 0 ? 'text-white-50' : 'text-white-400'}`}>
+                className={`bg-dark-purple-950 border-r-2 border-highlight mr-2 text-lg px-1 ${openPanel === 0 ? 'text-white-50 bg-dark-purple-900' : 'text-white-400 bg-dark-purple-950'}`}>
                     <strong>HTML</strong>
                     </button>
                 <button onClick={() => setOpenPanel(1)} 
-                className={`bg-dark-purple-950 border-x-2 border-highlight px-1 text-lg ${openPanel === 1 ? 'text-white-50' : 'text-white-400'}`}
+                className={` border-x-2 border-highlight px-1 text-lg ${openPanel === 1 ? 'text-white-50 bg-dark-purple-900' : 'text-white-400 bg-dark-purple-950'}`}
                 >
                     <strong>CSS</strong>
                 </button>
             </div>
             <div className='side-window border-l-2 border-highlight bg-bright-purple-700 pl-4'>
-                
-                <pre >
+                <pre>
                     <code dangerouslySetInnerHTML={{__html: panels[openPanel]}}>
                     </code>
                 </pre>

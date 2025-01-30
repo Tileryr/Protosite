@@ -2,6 +2,7 @@ import { useReactFlow } from "@xyflow/react";
 import UnitField from "../../components/Inputs/UnitField";
 import OutputNode from "../../components/Nodes/BaseOutputNode";
 import { ClassNodeProps } from "../../nodeutils";
+import Checkbox from "../../components/Inputs/Checkbox";
 
 export default function SizingNode({id, data}: ClassNodeProps<'sizing'>) {
     const { updateNodeData } = useReactFlow()
@@ -31,7 +32,9 @@ export default function SizingNode({id, data}: ClassNodeProps<'sizing'>) {
                 label="Padding:"
                 onChange={(value, unit) => updateNodeData(id, {styling: {...data.styling, 'padding': `${value}${unit}`}})}
                 max={1000}
-            />
+            >
+            </UnitField>
+            
             <UnitField 
                 label="Margin:"
                 onChange={(value, unit) => updateNodeData(id, {styling: {...data.styling, 'margin': `${value}${unit}`}})}
