@@ -34,7 +34,7 @@ export default function SizingNode({id, data}: ClassNodeProps<'sizing'>) {
                 max={1000}
             >
             </UnitField>
-            
+
             <UnitField 
                 label="Margin:"
                 onChange={(value, unit) => updateNodeData(id, {styling: {...data.styling, 'margin': `${value}${unit}`}})}

@@ -14,7 +14,7 @@ export default function ParagraphNode({ id, data }: ElementNodeProps<'paragraph'
     const tags: ElementTag[] = [
         { name: "Paragraph", value: "p" },
         { name: "Span", value: "span" },
-        { name: "Ordered List", value: "ol" }
+        { name: "Code", value: "code" },
     ]
 
     return (

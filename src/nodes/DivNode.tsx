@@ -16,7 +16,9 @@ export default function DivNode({ id, data }: NodeProps<DivNode>) {
 
     const tags: ElementTag[] = [
         {name: 'Div', value: 'div'},
-        {name: 'Section', value: 'section'}
+        {name: 'Section', value: 'section'},
+        {name: 'Footer', value: 'footer'},
+        {name: 'Header', value: 'header'},
     ]
     
     return (
