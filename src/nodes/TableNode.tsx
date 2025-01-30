@@ -9,7 +9,7 @@ import useNumberField from "../components/Inputs/NumberField";
 import NodeShell from "../components/Nodes/NodeShell";
 import { ElementObject } from "../types";
 
-export default function TableNode({ id, data }: ElementNodeProps<'table'>) {
+export default function TableNode({ id, data, positionAbsoluteX, positionAbsoluteY }: ElementNodeProps<'table'>) {
     const updateNodeInternals = useUpdateNodeInternals();
     const [rowAmount, setRowAmount] = useState(1)
 
@@ -42,6 +42,7 @@ export default function TableNode({ id, data }: ElementNodeProps<'table'>) {
                         nodeType="table-row" 
                         connectionType="element" 
                         handleIndex={index}
+                        position={{ x: positionAbsoluteX + 200, y: positionAbsoluteY}}
                         limit={true}
                     />
                 </IterableInput>
@@ -54,7 +55,7 @@ export default function TableNode({ id, data }: ElementNodeProps<'table'>) {
     )
 }
 
-export function TableRowNode({ id, data }: ElementNodeProps<'table-row'>) {
+export function TableRowNode({ id, data, positionAbsoluteX, positionAbsoluteY }: ElementNodeProps<'table-row'>) {
     const tags: ElementTag[] = [{
         name: 'Table-Row', value: 'tr'
     }]
@@ -85,6 +86,7 @@ export function TableRowNode({ id, data }: ElementNodeProps<'table-row'>) {
                         > 
                             <AddNodeButton 
                                 nodeData={new ElementData({tag: 'td'})} 
+                                position={{ x: positionAbsoluteX, y: positionAbsoluteY + 100}}
                                 nodeType="table-data" 
                                 connectionType="element"
                                 handleIndex={index} 

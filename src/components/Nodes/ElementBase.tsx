@@ -61,14 +61,6 @@ export class ElementData implements ElementNodeData {
 }
 
 export default function ElementBase({ output, tags, data, children, width }: PropsWithChildren<ElementNode> & { width?: number }) {
-    const styleInputProps = useInput({
-        portID: 'styling',
-        limit: false,
-        onConnection: (newStyling) => {
-            data.updateElement('styling', newStyling)
-        }
-    })
-
     const classInputProps = useInput({
         portID: 'class',
         limit: false,
@@ -123,10 +115,6 @@ export default function ElementBase({ output, tags, data, children, width }: Pro
     return (
         <NodeShell header={header} footer={renderOrderInput} width={width}>
             {children}
-            <Port
-                {...styleInputProps}
-                label="Styling"
-            />
             <Port 
                 {...classInputProps}
                 label="Classes"

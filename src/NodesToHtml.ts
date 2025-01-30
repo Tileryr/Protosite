@@ -3,6 +3,7 @@ import { ElementObject } from "./types"
 
 export function convertHtml(root: ElementObject, classes: ClassInterface[] ) {
     const body = document.createElement('body')
+    body.classList.add(...root.classes)
     addChildren(root, body)
     return body
 }

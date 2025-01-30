@@ -52,9 +52,6 @@ export default function NodeMenu({ open, position, addNode }: {
                     label: "Class Propagater",
                     onClick: () => addNode('class-output', {currentClass: ''})
                 },{
-                    label: "Style",
-                    onClick: () => addNode('styling', {styling: {}}),
-                },{
                     label: "Typography",
                     onClick: () => addNode('typography', new ClassNodeData() as {})
                 },{
