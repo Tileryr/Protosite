@@ -1,5 +1,6 @@
 # Protosite  
-Quickly create frontends while simultaneously making code to use later.
+A node based editor for quickly building out frontends.  
+**BASIC KNOWLEDGE OF HTML IS REQUIRED!**
 ## Features
 * Create classes and style them
 * Real time view of your website
