@@ -22,11 +22,11 @@ export default function NodeShell({header, footer, height, width, children}: Pro
                 
             }}
         >
-            <header className='header rounded-t-sm'>
+            <header className='header rounded-t-sm '>
                 {header}
             </header>
 
-            <main className='p-2 rounded-b-md'>
+            <main className='p-2 rounded-b-md grid'>
                 {children}
             </main>
 

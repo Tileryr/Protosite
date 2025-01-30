@@ -275,7 +275,13 @@ export default function TextNode({ id }: NodeProps<TextNode>) {
                 className={`w-6 aspect-square leading-6 rounded mx-1 ${italicizedActived ? 'bg-blue-700' : 'bg-dark-purple-800'} `} 
                 onClick={() => setItalicizedActivated(prev => !prev)}>I</button>
             </div>
-            <div contentEditable onPaste={handlePaste} className='w-full h-full nodrag mt-2 focus:outline outline-2 outline-white-100 rounded pl-1' ref={textFieldRef} onInput={onChange}></div>
+            <div className='mt-2'></div>
+            <div contentEditable onPaste={handlePaste} 
+            className='w-full h-full nodrag focus:outline 
+            rounded-full bg-dry-purple-950  leading-4
+            outline-2 outline-white-100 p-1' ref={textFieldRef} onInput={onChange}
+
+            ></div>
         </OutputNode>
     )
 }
